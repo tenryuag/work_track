@@ -6,6 +6,7 @@ import { ordersAPI } from '../services/api';
 import type { Order, OrderStatus, StatusChangeRequest } from '../types';
 import {
   ArrowLeft,
+  Building2,
   Calendar,
   User,
   Clock,
@@ -199,6 +200,19 @@ const OrderDetail: React.FC = () => {
                   <p className="text-gray-900">{order.createdBy.name}</p>
                   <p className="text-sm text-gray-500">{order.createdBy.email}</p>
                 </div>
+
+                {order.customer && (
+                  <div>
+                    <div className="flex items-center space-x-2 text-gray-600 mb-1">
+                      <Building2 className="h-4 w-4" />
+                      <span className="text-sm font-medium">{t('customer')}</span>
+                    </div>
+                    <p className="text-gray-900">{order.customer.name}</p>
+                    {order.customer.company && (
+                      <p className="text-sm text-gray-500">{order.customer.company}</p>
+                    )}
+                  </div>
+                )}
 
                 <div>
                   <div className="flex items-center space-x-2 text-gray-600 mb-1">

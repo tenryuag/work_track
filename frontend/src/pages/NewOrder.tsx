@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
-import { ordersAPI, usersAPI } from '../services/api';
-import type { OrderRequest, OrderPriority, UserBasic } from '../types';
+import { ordersAPI, usersAPI, customersAPI } from '../services/api';
+import type { OrderRequest, OrderPriority, UserBasic, Customer } from '../types';
 import { ArrowLeft, Save } from 'lucide-react';
 import { getPriorityLabel } from '../utils/translationHelpers';
 
@@ -11,6 +11,7 @@ const NewOrder: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [operators, setOperators] = useState<UserBasic[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,11 +20,13 @@ const NewOrder: React.FC = () => {
     description: '',
     priority: 'MEDIUM',
     assignedToId: 0,
+    customerId: undefined,
     deadline: '',
   });
 
   useEffect(() => {
     fetchOperators();
+    fetchCustomers();
   }, []);
 
   const fetchOperators = async () => {
@@ -32,6 +35,15 @@ const NewOrder: React.FC = () => {
       setOperators(response.data);
     } catch (err) {
       console.error('Failed to fetch operators:', err);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await customersAPI.getAll();
+      setCustomers(response.data);
+    } catch (err) {
+      console.error('Failed to fetch customers:', err);
     }
   };
 
@@ -151,6 +163,28 @@ const NewOrder: React.FC = () => {
                 {operators.map((operator) => (
                   <option key={operator.id} value={operator.id}>
                     {operator.name} ({operator.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Customer */}
+            <div>
+              <label htmlFor="customer" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('customer')}
+              </label>
+              <select
+                id="customer"
+                value={formData.customerId || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, customerId: e.target.value ? Number(e.target.value) : undefined })
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">{t('selectCustomer')}</option>
+                {customers.map((customer) => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.name} {customer.company ? `(${customer.company})` : ''}
                   </option>
                 ))}
               </select>

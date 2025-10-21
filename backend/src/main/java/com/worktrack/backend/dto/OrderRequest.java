@@ -18,17 +18,20 @@ public class OrderRequest {
     @NotNull(message = "Asignado a es requerido")
     private Long assignedToId;
 
+    private Long customerId;
+
     @NotNull(message = "Fecha límite es requerida")
     private LocalDate deadline;
 
     public OrderRequest() {
     }
 
-    public OrderRequest(String product, String description, String priority, Long assignedToId, LocalDate deadline) {
+    public OrderRequest(String product, String description, String priority, Long assignedToId, Long customerId, LocalDate deadline) {
         this.product = product;
         this.description = description;
         this.priority = priority;
         this.assignedToId = assignedToId;
+        this.customerId = customerId;
         this.deadline = deadline;
     }
 
@@ -70,5 +73,13 @@ public class OrderRequest {
 
     public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 }
