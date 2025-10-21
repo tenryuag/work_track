@@ -30,9 +30,9 @@ export const getPriorityLabel = (priority: OrderPriority, t?: (key: any) => stri
 
 export const getPriorityColor = (priority: OrderPriority): string => {
   const colors: Record<OrderPriority, string> = {
-    HIGH: 'bg-red-100 text-red-800',
-    MEDIUM: 'bg-yellow-100 text-yellow-800',
-    LOW: 'bg-green-100 text-green-800',
+    HIGH: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    MEDIUM: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+    LOW: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
   };
   return colors[priority];
 };
@@ -43,6 +43,7 @@ export const getStatusLabel = (status: OrderStatus, t?: (key: any) => string): s
       PENDING: t('pending'),
       IN_PROGRESS: t('inProgress'),
       COMPLETED: t('completed'),
+      DELIVERED: t('delivered'),
     };
     return labels[status];
   }
@@ -51,15 +52,17 @@ export const getStatusLabel = (status: OrderStatus, t?: (key: any) => string): s
     PENDING: '保留中',
     IN_PROGRESS: '進行中',
     COMPLETED: '完了',
+    DELIVERED: '配送済み',
   };
   return labels[status];
 };
 
 export const getStatusColor = (status: OrderStatus): string => {
   const colors: Record<OrderStatus, string> = {
-    PENDING: 'bg-gray-100 text-gray-800',
-    IN_PROGRESS: 'bg-blue-100 text-blue-800',
-    COMPLETED: 'bg-green-100 text-green-800',
+    PENDING: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+    IN_PROGRESS: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+    COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+    DELIVERED: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
   };
   return colors[status];
 };

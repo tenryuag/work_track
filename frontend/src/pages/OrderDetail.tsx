@@ -11,6 +11,7 @@ import {
   Clock,
   RefreshCw,
   Trash2,
+  Settings,
 } from 'lucide-react';
 import {
   formatDate,
@@ -217,6 +218,16 @@ const OrderDetail: React.FC = () => {
                   </div>
                   <p className="text-gray-900">{formatDateTime(order.createdAt)}</p>
                 </div>
+
+                {order.machine && (
+                  <div className="col-span-2">
+                    <div className="flex items-center space-x-2 text-gray-600 mb-1">
+                      <Settings className="h-4 w-4" />
+                      <span className="text-sm font-medium">{t('machine')}</span>
+                    </div>
+                    <p className="text-gray-900 font-medium">{order.machine}</p>
+                  </div>
+                )}
               </div>
             </div>
 
