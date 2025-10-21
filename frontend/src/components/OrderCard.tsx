@@ -9,7 +9,7 @@ import {
   getPriorityColor,
   isOverdue,
 } from '../utils/helpers';
-import { Calendar, Eye, AlertCircle } from 'lucide-react';
+import { Calendar, Eye, AlertCircle, User } from 'lucide-react';
 
 interface OrderCardProps {
   order: Order;
@@ -41,10 +41,13 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onQuickEdit }) => {
         (isAdmin() || isManager()) ? 'cursor-pointer' : ''
       } flex flex-col`}
     >
-      {/* Priority Badge - Top Right */}
-      <div className="flex justify-end mb-1.5">
+      {/* Header: Product Name (Left) & Priority Badge (Right) */}
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm leading-tight flex-1">
+          {order.product}
+        </h3>
         <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${getPriorityColor(
+          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ${getPriorityColor(
             order.priority
           )}`}
         >
@@ -52,14 +55,15 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onQuickEdit }) => {
         </span>
       </div>
 
-      {/* Product Name - Center */}
-      <div className="flex-1 flex items-center justify-center text-center py-2">
-        <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base leading-snug px-1">
-          {order.product}
-        </h3>
+      {/* Assigned Operator - Center */}
+      <div className="flex-1 flex items-center justify-center py-2">
+        <div className="flex items-center space-x-1.5 text-gray-600 dark:text-gray-400">
+          <User className="h-4 w-4" />
+          <span className="text-sm font-medium">{order.assignedTo.name}</span>
+        </div>
       </div>
 
-      {/* Deadline - Bottom */}
+      {/* Footer: Deadline & Button */}
       <div>
         <div className={`flex items-center justify-center space-x-1.5 text-xs font-medium ${
           overdue ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'

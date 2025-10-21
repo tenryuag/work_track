@@ -272,14 +272,47 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQu
     },
   });
 
+  // Get column colors based on status
+  const getColumnColors = (status: OrderStatus) => {
+    const colors = {
+      PENDING: {
+        bg: 'bg-gray-100 dark:bg-gray-700/50',
+        header: 'bg-gray-200 dark:bg-gray-700',
+        title: 'text-gray-900 dark:text-gray-100',
+        badge: 'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300',
+      },
+      IN_PROGRESS: {
+        bg: 'bg-blue-50 dark:bg-blue-900/20',
+        header: 'bg-blue-100 dark:bg-blue-900/40',
+        title: 'text-blue-900 dark:text-blue-100',
+        badge: 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200',
+      },
+      COMPLETED: {
+        bg: 'bg-green-50 dark:bg-green-900/20',
+        header: 'bg-green-100 dark:bg-green-900/40',
+        title: 'text-green-900 dark:text-green-100',
+        badge: 'bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200',
+      },
+      DELIVERED: {
+        bg: 'bg-purple-50 dark:bg-purple-900/20',
+        header: 'bg-purple-100 dark:bg-purple-900/40',
+        title: 'text-purple-900 dark:text-purple-100',
+        badge: 'bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200',
+      },
+    };
+    return colors[status];
+  };
+
+  const colors = getColumnColors(status);
+
   return (
     <div
       ref={setNodeRef}
-      className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 min-h-[600px]"
+      className={`${colors.bg} rounded-lg p-4 min-h-[600px] transition-colors`}
     >
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-        <span className="text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-700 px-2 py-1 rounded-full">
+      <div className={`flex items-center justify-between mb-4 ${colors.header} -mx-4 -mt-4 px-4 py-3 rounded-t-lg`}>
+        <h3 className={`font-semibold ${colors.title}`}>{title}</h3>
+        <span className={`text-sm font-bold ${colors.badge} px-2.5 py-1 rounded-full`}>
           {orders.length}
         </span>
       </div>
@@ -293,7 +326,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQu
       </SortableContext>
 
       {orders.length === 0 && (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+        <div className={`text-center py-8 text-sm font-medium opacity-50 ${colors.title}`}>
           Drop orders here
         </div>
       )}
