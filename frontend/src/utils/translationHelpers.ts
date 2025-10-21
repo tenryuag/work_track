@@ -14,6 +14,7 @@ export const getStatusLabel = (status: OrderStatus, t: (key: any) => string): st
     PENDING: t('pending'),
     IN_PROGRESS: t('inProgress'),
     COMPLETED: t('completed'),
+    DELIVERED: t('delivered'),
   };
   return labels[status];
 };
