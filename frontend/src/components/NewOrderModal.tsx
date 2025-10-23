@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import Modal from './Modal';
-import { ordersAPI, usersAPI } from '../services/api';
-import type { OrderRequest, OrderPriority, UserBasic } from '../types';
+import { ordersAPI, usersAPI, customersAPI } from '../services/api';
+import type { OrderRequest, OrderPriority, UserBasic, Customer } from '../types';
 import { Save } from 'lucide-react';
 import { getPriorityLabel } from '../utils/translationHelpers';
 
@@ -15,6 +15,7 @@ interface NewOrderModalProps {
 const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useLanguage();
   const [operators, setOperators] = useState<UserBasic[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,12 +24,14 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
     description: '',
     priority: 'MEDIUM',
     assignedToId: 0,
+    customerId: undefined,
     deadline: '',
   });
 
   useEffect(() => {
     if (isOpen) {
       fetchOperators();
+      fetchCustomers();
     }
   }, [isOpen]);
 
@@ -38,6 +41,15 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
       setOperators(response.data);
     } catch (err) {
       console.error('Failed to fetch operators:', err);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await customersAPI.getAll();
+      setCustomers(response.data);
+    } catch (err) {
+      console.error('Failed to fetch customers:', err);
     }
   };
 
@@ -54,6 +66,7 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
         description: '',
         priority: 'MEDIUM',
         assignedToId: 0,
+        customerId: undefined,
         deadline: '',
       });
       onSuccess();
@@ -151,6 +164,28 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
             {operators.map((operator) => (
               <option key={operator.id} value={operator.id}>
                 {operator.name} ({operator.email})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Customer */}
+        <div>
+          <label htmlFor="customer" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            {t('customer')}
+          </label>
+          <select
+            id="customer"
+            value={formData.customerId || ''}
+            onChange={(e) =>
+              setFormData({ ...formData, customerId: e.target.value ? Number(e.target.value) : undefined })
+            }
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          >
+            <option value="">{t('selectCustomer')}</option>
+            {customers.map((customer) => (
+              <option key={customer.id} value={customer.id}>
+                {customer.name}{customer.company ? ` - ${customer.company}` : ''}
               </option>
             ))}
           </select>

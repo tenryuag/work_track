@@ -209,6 +209,19 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 <p className="text-sm text-gray-500 dark:text-gray-400">{order.createdBy.email}</p>
               </div>
 
+              {order.customer && (
+                <div>
+                  <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-1">
+                    <User className="h-4 w-4" />
+                    <span className="text-sm font-medium">{t('customer')}</span>
+                  </div>
+                  <p className="text-gray-900 dark:text-gray-100">{order.customer.name}</p>
+                  {order.customer.company && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{order.customer.company}</p>
+                  )}
+                </div>
+              )}
+
               <div>
                 <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-1">
                   <Calendar className="h-4 w-4" />

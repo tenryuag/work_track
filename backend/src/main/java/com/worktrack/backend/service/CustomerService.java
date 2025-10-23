@@ -19,7 +19,7 @@ public class CustomerService {
 
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomers() {
-        return customerRepository.findAll()
+        return customerRepository.findAllByOrderByNameAsc()
                 .stream()
                 .map(CustomerResponse::new)
                 .collect(Collectors.toList());

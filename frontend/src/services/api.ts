@@ -7,7 +7,9 @@ import type {
   Order,
   OrderRequest,
   StatusChangeRequest,
-  UserBasic
+  UserBasic,
+  Customer,
+  CustomerRequest
 } from '../types';
 
 const API_URL = 'http://localhost:8080/api';

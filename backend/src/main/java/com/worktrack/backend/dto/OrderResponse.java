@@ -142,6 +142,14 @@ public class OrderResponse {
         this.statusLogs = statusLogs;
     }
 
+    public CustomerBasicDTO getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerBasicDTO customer) {
+        this.customer = customer;
+    }
+
     public static class UserBasicDTO {
         private Long id;
         private String name;
@@ -286,6 +294,45 @@ public class OrderResponse {
 
         public void setCreatedAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
+        }
+    }
+
+    public static class CustomerBasicDTO {
+        private Long id;
+        private String name;
+        private String company;
+
+        public CustomerBasicDTO() {
+        }
+
+        public CustomerBasicDTO(Long id, String name, String company) {
+            this.id = id;
+            this.name = name;
+            this.company = company;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCompany() {
+            return company;
+        }
+
+        public void setCompany(String company) {
+            this.company = company;
         }
     }
 }

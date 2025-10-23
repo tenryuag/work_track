@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import PrivateRoute from './components/PrivateRoute';
 import Login from './pages/Login';
 import HomePage from './pages/HomePage';
+import CustomersPage from './pages/CustomersPage';
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,14 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute>
                     <HomePage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/customers"
+                element={
+                  <PrivateRoute requireAdmin>
+                    <CustomersPage />
                   </PrivateRoute>
                 }
               />
