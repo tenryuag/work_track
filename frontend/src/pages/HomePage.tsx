@@ -10,6 +10,7 @@ import { ordersAPI } from '../services/api';
 import type { Order, OrderStatus } from '../types';
 import { Plus } from 'lucide-react';
 import { getStatusLabel } from '../utils/translationHelpers';
+import { getColumnColor } from '../utils/helpers';
 import {
   DndContext,
   DragEndEvent,
@@ -300,11 +301,16 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQu
   return (
     <div
       ref={setNodeRef}
-      className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 min-h-[600px]"
+      className={`${getColumnColor(status)} rounded-lg p-4 min-h-[600px] border-2 border-transparent`}
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-        <span className="text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-700 px-2 py-1 rounded-full">
+        <span className={`text-sm font-medium px-2.5 py-1 rounded-full ${
+          status === 'PENDING' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200' :
+          status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200' :
+          status === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200' :
+          'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200'
+        }`}>
           {orders.length}
         </span>
       </div>
@@ -318,7 +324,12 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQu
       </SortableContext>
 
       {orders.length === 0 && (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+        <div className={`text-center py-8 text-sm ${
+          status === 'PENDING' ? 'text-orange-400 dark:text-orange-500' :
+          status === 'IN_PROGRESS' ? 'text-blue-400 dark:text-blue-500' :
+          status === 'COMPLETED' ? 'text-green-400 dark:text-green-500' :
+          'text-purple-400 dark:text-purple-500'
+        }`}>
           Drop orders here
         </div>
       )}
