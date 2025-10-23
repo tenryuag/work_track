@@ -290,6 +290,7 @@ interface KanbanColumnProps {
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQuickEdit, onViewDetails }) => {
+  const { t } = useLanguage();
   const { setNodeRef } = useSortable({
     id: status,
     data: {
@@ -330,7 +331,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQu
           status === 'COMPLETED' ? 'text-green-400 dark:text-green-500' :
           'text-purple-400 dark:text-purple-500'
         }`}>
-          Drop orders here
+          {t('dropOrdersHere')}
         </div>
       )}
     </div>

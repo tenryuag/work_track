@@ -49,6 +49,7 @@ export const translations = {
     filters: 'フィルター',
     noOrders: '注文がありません',
     fetchOrdersFailed: '注文の取得に失敗しました',
+    dropOrdersHere: 'ここに注文をドロップ',
 
     // Order Card
     assignedTo: '担当者',
@@ -172,6 +173,7 @@ export const translations = {
     filters: 'Filters',
     noOrders: 'No orders available',
     fetchOrdersFailed: 'Failed to fetch orders',
+    dropOrdersHere: 'Drop orders here',
 
     // Order Card
     assignedTo: 'Assigned to',
