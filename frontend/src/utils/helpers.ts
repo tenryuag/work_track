@@ -59,10 +59,10 @@ export const getStatusLabel = (status: OrderStatus, t?: (key: any) => string): s
 
 export const getStatusColor = (status: OrderStatus): string => {
   const colors: Record<OrderStatus, string> = {
-    PENDING: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-    IN_PROGRESS: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    DELIVERED: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
+    PENDING: 'bg-orange-200 text-orange-900 dark:bg-orange-800 dark:text-orange-100',
+    IN_PROGRESS: 'bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100',
+    COMPLETED: 'bg-green-200 text-green-900 dark:bg-green-700 dark:text-green-100',
+    DELIVERED: 'bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100',
   };
   return colors[status];
 };
