@@ -6,8 +6,6 @@ import { ThemeProvider } from './context/ThemeContext';
 import PrivateRoute from './components/PrivateRoute';
 import Login from './pages/Login';
 import HomePage from './pages/HomePage';
-import NewOrder from './pages/NewOrder';
-import OrderDetail from './pages/OrderDetail';
 
 const App: React.FC = () => {
   return (
@@ -22,22 +20,6 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute>
                     <HomePage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/orders/new"
-                element={
-                  <PrivateRoute requireAdmin>
-                    <NewOrder />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/orders/:id"
-                element={
-                  <PrivateRoute>
-                    <OrderDetail />
                   </PrivateRoute>
                 }
               />
