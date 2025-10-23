@@ -17,21 +17,29 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAllByOrderByNameAsc()
                 .stream()
-                .map(CustomerResponse::fromEntity)
+                .map(CustomerResponse::new)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public CustomerResponse getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        return CustomerResponse.fromEntity(customer);
+                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+        return new CustomerResponse(customer);
     }
 
     @Transactional
     public CustomerResponse createCustomer(CustomerRequest request) {
+        // Check if email already exists
+        if (request.getEmail() != null && !request.getEmail().isEmpty()
+                && customerRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Customer with this email already exists");
+        }
+
         Customer customer = new Customer();
         customer.setName(request.getName());
         customer.setCompany(request.getCompany());
@@ -39,14 +47,21 @@ public class CustomerService {
         customer.setPhone(request.getPhone());
         customer.setAddress(request.getAddress());
 
-        Customer savedCustomer = customerRepository.save(customer);
-        return CustomerResponse.fromEntity(savedCustomer);
+        Customer saved = customerRepository.save(customer);
+        return new CustomerResponse(saved);
     }
 
     @Transactional
     public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+
+        // Check if email is being changed and if new email already exists
+        if (request.getEmail() != null && !request.getEmail().isEmpty()
+                && !request.getEmail().equals(customer.getEmail())
+                && customerRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Customer with this email already exists");
+        }
 
         customer.setName(request.getName());
         customer.setCompany(request.getCompany());
@@ -54,14 +69,15 @@ public class CustomerService {
         customer.setPhone(request.getPhone());
         customer.setAddress(request.getAddress());
 
-        Customer updatedCustomer = customerRepository.save(customer);
-        return CustomerResponse.fromEntity(updatedCustomer);
+        Customer updated = customerRepository.save(customer);
+        return new CustomerResponse(updated);
     }
 
     @Transactional
     public void deleteCustomer(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        customerRepository.delete(customer);
+        if (!customerRepository.existsById(id)) {
+            throw new RuntimeException("Customer not found with id: " + id);
+        }
+        customerRepository.deleteById(id);
     }
 }

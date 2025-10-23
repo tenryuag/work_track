@@ -1,8 +1,6 @@
 package com.worktrack.backend.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -14,28 +12,37 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column
+    @Column(length = 150)
     private String company;
 
-    @Column
+    @Column(length = 100)
     private String email;
 
-    @Column
+    @Column(length = 20)
     private String phone;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 200)
     private String address;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     // Constructors
     public Customer() {

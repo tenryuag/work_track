@@ -15,6 +15,7 @@ public class CustomerResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    // Constructors
     public CustomerResponse() {
     }
 
@@ -29,17 +30,15 @@ public class CustomerResponse {
         this.updatedAt = updatedAt;
     }
 
-    public static CustomerResponse fromEntity(Customer customer) {
-        return new CustomerResponse(
-            customer.getId(),
-            customer.getName(),
-            customer.getCompany(),
-            customer.getEmail(),
-            customer.getPhone(),
-            customer.getAddress(),
-            customer.getCreatedAt(),
-            customer.getUpdatedAt()
-        );
+    public CustomerResponse(Customer customer) {
+        this.id = customer.getId();
+        this.name = customer.getName();
+        this.company = customer.getCompany();
+        this.email = customer.getEmail();
+        this.phone = customer.getPhone();
+        this.address = customer.getAddress();
+        this.createdAt = customer.getCreatedAt();
+        this.updatedAt = customer.getUpdatedAt();
     }
 
     // Getters and Setters

@@ -1,5 +1,7 @@
 import axios from 'axios';
 import type {
+  Customer,
+  CustomerRequest,
   LoginRequest,
   LoginResponse,
   Order,

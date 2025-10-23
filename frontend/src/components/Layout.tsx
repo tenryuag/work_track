@@ -1,9 +1,9 @@
 import React, { ReactNode, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { LogOut, User, Globe, Sun, Moon } from 'lucide-react';
+import { LogOut, User, Globe, Sun, Moon, Home, Users } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,6 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLangMenu, setShowLangMenu] = useState(false);
 
   const handleLogout = () => {
@@ -116,6 +117,38 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
       </header>
+
+      {/* Navigation */}
+      {user?.role === 'ADMIN' && (
+        <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex space-x-4 py-3">
+              <button
+                onClick={() => navigate('/')}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  location.pathname === '/'
+                    ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Home className="h-4 w-4" />
+                <span>{t('home')}</span>
+              </button>
+              <button
+                onClick={() => navigate('/customers')}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  location.pathname === '/customers'
+                    ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Users className="h-4 w-4" />
+                <span>{t('customers')}</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
