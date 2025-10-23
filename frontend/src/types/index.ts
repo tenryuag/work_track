@@ -95,3 +95,20 @@ export interface StatusLog {
   changedBy: UserBasic;
   createdAt: string;
 }
+
+export interface Material {
+  id: number;
+  name: string;
+  description?: string;
+  unit?: string;
+  stockQuantity?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MaterialRequest {
+  name: string;
+  description?: string;
+  unit?: string;
+  stockQuantity?: number;
+}

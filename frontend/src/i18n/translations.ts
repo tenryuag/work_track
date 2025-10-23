@@ -102,7 +102,7 @@ export const translations = {
     selectCustomer: '顧客を選択',
     newCustomer: '新規顧客',
     editCustomer: '顧客を編集',
-    totalCustomers: '全 {count} 件の顧客',
+    totalCustomers: '全顧客数',
     fetchCustomersFailed: '顧客の取得に失敗しました',
     confirmDeleteCustomer: 'この顧客を削除してもよろしいですか？',
     noCustomers: '顧客がありません',
@@ -112,6 +112,19 @@ export const translations = {
     address: '住所',
     actions: '操作',
     saveFailed: '保存に失敗しました',
+
+    // Materials
+    materials: '材料',
+    material: '材料',
+    newMaterial: '新規材料',
+    editMaterial: '材料を編集',
+    totalMaterials: '全材料数',
+    fetchMaterialsFailed: '材料の取得に失敗しました',
+    confirmDeleteMaterial: 'この材料を削除してもよろしいですか？',
+    noMaterials: '材料がありません',
+    unit: '単位',
+    unitPlaceholder: '例: kg, m, 個, L',
+    stockQuantity: '在庫数量',
 
     // Language
     language: '言語',
@@ -123,21 +136,7 @@ export const translations = {
     lightMode: 'ライトモード',
     darkMode: 'ダークモード',
 
-    // Customers
-    customers: '顧客',
-    customer: '顧客',
-    customerManagement: '顧客管理',
-    addCustomer: '顧客を追加',
-    editCustomer: '顧客を編集',
-    noCustomers: '顧客がいません',
-    name: '名前',
-    company: '会社',
-    phone: '電話番号',
-    address: '住所',
-    confirmDeleteCustomer: 'この顧客を削除してもよろしいですか？',
-    errorSavingCustomer: '顧客の保存に失敗しました',
-    errorDeletingCustomer: '顧客の削除に失敗しました',
-    selectCustomer: '顧客を選択',
+    // Navigation
     home: 'ホーム',
   },
   en: {
@@ -243,7 +242,7 @@ export const translations = {
     selectCustomer: 'Select customer',
     newCustomer: 'New Customer',
     editCustomer: 'Edit Customer',
-    totalCustomers: 'Total {count} customers',
+    totalCustomers: 'Total Customers',
     fetchCustomersFailed: 'Failed to fetch customers',
     confirmDeleteCustomer: 'Are you sure you want to delete this customer?',
     noCustomers: 'No customers available',
@@ -253,6 +252,19 @@ export const translations = {
     address: 'Address',
     actions: 'Actions',
     saveFailed: 'Failed to save',
+
+    // Materials
+    materials: 'Materials',
+    material: 'Material',
+    newMaterial: 'New Material',
+    editMaterial: 'Edit Material',
+    totalMaterials: 'Total Materials',
+    fetchMaterialsFailed: 'Failed to fetch materials',
+    confirmDeleteMaterial: 'Are you sure you want to delete this material?',
+    noMaterials: 'No materials available',
+    unit: 'Unit',
+    unitPlaceholder: 'e.g., kg, m, pcs, L',
+    stockQuantity: 'Stock Quantity',
 
     // Language
     language: 'Language',
@@ -264,21 +276,7 @@ export const translations = {
     lightMode: 'Light Mode',
     darkMode: 'Dark Mode',
 
-    // Customers
-    customers: 'Customers',
-    customer: 'Customer',
-    customerManagement: 'Customer Management',
-    addCustomer: 'Add Customer',
-    editCustomer: 'Edit Customer',
-    noCustomers: 'No customers available',
-    name: 'Name',
-    company: 'Company',
-    phone: 'Phone',
-    address: 'Address',
-    confirmDeleteCustomer: 'Are you sure you want to delete this customer?',
-    errorSavingCustomer: 'Failed to save customer',
-    errorDeletingCustomer: 'Failed to delete customer',
-    selectCustomer: 'Select customer',
+    // Navigation
     home: 'Home',
   },
 };
