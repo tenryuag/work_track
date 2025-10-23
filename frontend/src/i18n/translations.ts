@@ -96,6 +96,23 @@ export const translations = {
     updating: '更新中...',
     updateStatusFailed: 'ステータスの更新に失敗しました',
 
+    // Customers
+    customers: '顧客',
+    customer: '顧客',
+    selectCustomer: '顧客を選択',
+    newCustomer: '新規顧客',
+    editCustomer: '顧客を編集',
+    totalCustomers: '全 {count} 件の顧客',
+    fetchCustomersFailed: '顧客の取得に失敗しました',
+    confirmDeleteCustomer: 'この顧客を削除してもよろしいですか？',
+    noCustomers: '顧客がありません',
+    name: '名前',
+    company: '会社名',
+    phone: '電話番号',
+    address: '住所',
+    actions: '操作',
+    saveFailed: '保存に失敗しました',
+
     // Language
     language: '言語',
     japanese: '日本語',
@@ -202,6 +219,23 @@ export const translations = {
     commentPlaceholder: 'Enter reason for change',
     updating: 'Updating...',
     updateStatusFailed: 'Failed to update status',
+
+    // Customers
+    customers: 'Customers',
+    customer: 'Customer',
+    selectCustomer: 'Select customer',
+    newCustomer: 'New Customer',
+    editCustomer: 'Edit Customer',
+    totalCustomers: 'Total {count} customers',
+    fetchCustomersFailed: 'Failed to fetch customers',
+    confirmDeleteCustomer: 'Are you sure you want to delete this customer?',
+    noCustomers: 'No customers available',
+    name: 'Name',
+    company: 'Company',
+    phone: 'Phone',
+    address: 'Address',
+    actions: 'Actions',
+    saveFailed: 'Failed to save',
 
     // Language
     language: 'Language',

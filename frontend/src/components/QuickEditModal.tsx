@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import type { Order, OrderStatus, UserBasic } from '../types';
-import { ordersAPI, usersAPI } from '../services/api';
+import type { Order, OrderStatus, UserBasic, Customer } from '../types';
+import { ordersAPI, usersAPI, customersAPI } from '../services/api';
 import { X } from 'lucide-react';
 import { getStatusLabel } from '../utils/translationHelpers';
 
@@ -15,17 +15,20 @@ interface QuickEditModalProps {
 const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose, onSuccess }) => {
   const { t } = useLanguage();
   const [operators, setOperators] = useState<UserBasic[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     assignedToId: order.assignedTo.id,
     deadline: order.deadline,
     description: order.description || '',
     status: order.status,
+    customerId: order.customer?.id,
   });
 
   useEffect(() => {
     if (isOpen) {
       fetchOperators();
+      fetchCustomers();
     }
   }, [isOpen]);
 
@@ -35,6 +38,15 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
       setOperators(response.data);
     } catch (err) {
       console.error('Failed to fetch operators:', err);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await customersAPI.getAll();
+      setCustomers(response.data);
+    } catch (err) {
+      console.error('Failed to fetch customers:', err);
     }
   };
 
@@ -50,6 +62,7 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
         assignedToId: formData.assignedToId,
         deadline: formData.deadline,
         description: formData.description,
+        customerId: formData.customerId,
       });
 
       // If status changed, update status separately
@@ -106,6 +119,30 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
               {operators.map((op) => (
                 <option key={op.id} value={op.id}>
                   {op.name} ({op.email})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Customer */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('customer')}
+            </label>
+            <select
+              value={formData.customerId || ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  customerId: e.target.value ? Number(e.target.value) : undefined,
+                })
+              }
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            >
+              <option value="">{t('selectCustomer')}</option>
+              {customers.map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name} {customer.company && `(${customer.company})`}
                 </option>
               ))}
             </select>
