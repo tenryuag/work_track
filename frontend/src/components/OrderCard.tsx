@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import type { Order } from '../types';
@@ -14,10 +13,10 @@ import { Calendar, Eye, AlertCircle } from 'lucide-react';
 interface OrderCardProps {
   order: Order;
   onQuickEdit?: (order: Order) => void;
+  onViewDetails?: (orderId: number) => void;
 }
 
-const OrderCard: React.FC<OrderCardProps> = ({ order, onQuickEdit }) => {
-  const navigate = useNavigate();
+const OrderCard: React.FC<OrderCardProps> = ({ order, onQuickEdit, onViewDetails }) => {
   const { t } = useLanguage();
   const { isAdmin, isManager } = useAuth();
   const overdue = isOverdue(order.deadline) && order.status !== 'COMPLETED' && order.status !== 'DELIVERED';
@@ -29,9 +28,11 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onQuickEdit }) => {
     }
   };
 
-  const handleViewDetails = (e: React.MouseEvent) => {
+  const handleViewDetailsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/orders/${order.id}`);
+    if (onViewDetails) {
+      onViewDetails(order.id);
+    }
   };
 
   return (
@@ -71,7 +72,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onQuickEdit }) => {
 
         {/* View Details Button */}
         <button
-          onClick={handleViewDetails}
+          onClick={handleViewDetailsClick}
           className="mt-2 w-full flex items-center justify-center space-x-1.5 px-2 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded text-xs font-medium transition"
         >
           <Eye className="h-3.5 w-3.5" />
