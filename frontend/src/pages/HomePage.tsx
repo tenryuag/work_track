@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
 import OrderCard from '../components/OrderCard';
 import QuickEditModal from '../components/QuickEditModal';
+import NewOrderModal from '../components/NewOrderModal';
+import OrderDetailModal from '../components/OrderDetailModal';
 import { ordersAPI } from '../services/api';
 import type { Order, OrderStatus } from '../types';
 import { Plus } from 'lucide-react';
@@ -33,9 +34,10 @@ const HomePage: React.FC = () => {
     newStatus: OrderStatus;
   } | null>(null);
   const [quickEditOrder, setQuickEditOrder] = useState<Order | null>(null);
+  const [newOrderModalOpen, setNewOrderModalOpen] = useState(false);
+  const [orderDetailId, setOrderDetailId] = useState<number | null>(null);
   const { isAdmin, isManager, user } = useAuth();
   const { t } = useLanguage();
-  const navigate = useNavigate();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -140,6 +142,10 @@ const HomePage: React.FC = () => {
     setQuickEditOrder(order);
   };
 
+  const handleViewDetails = (orderId: number) => {
+    setOrderDetailId(orderId);
+  };
+
   return (
     <Layout>
       {/* Header */}
@@ -153,7 +159,7 @@ const HomePage: React.FC = () => {
 
         {isAdmin() && (
           <button
-            onClick={() => navigate('/orders/new')}
+            onClick={() => setNewOrderModalOpen(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition shadow-sm"
           >
             <Plus className="h-5 w-5" />
@@ -192,6 +198,7 @@ const HomePage: React.FC = () => {
                 orders={getOrdersByStatus(status)}
                 title={getStatusLabel(status, t)}
                 onQuickEdit={handleQuickEdit}
+                onViewDetails={handleViewDetails}
               />
             ))}
           </div>
@@ -251,6 +258,23 @@ const HomePage: React.FC = () => {
           onSuccess={fetchOrders}
         />
       )}
+
+      {/* New Order Modal */}
+      <NewOrderModal
+        isOpen={newOrderModalOpen}
+        onClose={() => setNewOrderModalOpen(false)}
+        onSuccess={fetchOrders}
+      />
+
+      {/* Order Detail Modal */}
+      {orderDetailId && (
+        <OrderDetailModal
+          isOpen={!!orderDetailId}
+          onClose={() => setOrderDetailId(null)}
+          orderId={orderDetailId}
+          onSuccess={fetchOrders}
+        />
+      )}
     </Layout>
   );
 };
@@ -261,9 +285,10 @@ interface KanbanColumnProps {
   orders: Order[];
   title: string;
   onQuickEdit: (order: Order) => void;
+  onViewDetails: (orderId: number) => void;
 }
 
-const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQuickEdit }) => {
+const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQuickEdit, onViewDetails }) => {
   const { setNodeRef } = useSortable({
     id: status,
     data: {
@@ -287,7 +312,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQu
       <SortableContext items={orders.map((o) => o.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           {orders.map((order) => (
-            <DraggableOrderCard key={order.id} order={order} onQuickEdit={onQuickEdit} />
+            <DraggableOrderCard key={order.id} order={order} onQuickEdit={onQuickEdit} onViewDetails={onViewDetails} />
           ))}
         </div>
       </SortableContext>
@@ -305,9 +330,10 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQu
 interface DraggableOrderCardProps {
   order: Order;
   onQuickEdit: (order: Order) => void;
+  onViewDetails: (orderId: number) => void;
 }
 
-const DraggableOrderCard: React.FC<DraggableOrderCardProps> = ({ order, onQuickEdit }) => {
+const DraggableOrderCard: React.FC<DraggableOrderCardProps> = ({ order, onQuickEdit, onViewDetails }) => {
   const {
     attributes,
     listeners,
@@ -331,7 +357,7 @@ const DraggableOrderCard: React.FC<DraggableOrderCardProps> = ({ order, onQuickE
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <OrderCard order={order} onQuickEdit={onQuickEdit} />
+      <OrderCard order={order} onQuickEdit={onQuickEdit} onViewDetails={onViewDetails} />
     </div>
   );
 };

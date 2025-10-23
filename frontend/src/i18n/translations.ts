@@ -10,6 +10,7 @@ export const translations = {
     update: '更新',
     back: '戻る',
     logout: 'ログアウト',
+    close: '閉じる',
 
     // App Title
     appName: 'WorkTrack',
@@ -84,6 +85,7 @@ export const translations = {
     confirmDelete: 'この注文を削除してもよろしいですか？',
     deleteFailed: '注文の削除に失敗しました',
     fetchOrderFailed: '注文の取得に失敗しました',
+    orderNotFound: '注文が見つかりませんでした',
 
     // Status Change
     newStatus: '新しいステータス',
@@ -131,6 +133,7 @@ export const translations = {
     update: 'Update',
     back: 'Back',
     logout: 'Logout',
+    close: 'Close',
 
     // App Title
     appName: 'WorkTrack',
@@ -205,6 +208,7 @@ export const translations = {
     confirmDelete: 'Are you sure you want to delete this order?',
     deleteFailed: 'Failed to delete order',
     fetchOrderFailed: 'Failed to fetch order',
+    orderNotFound: 'Order not found',
 
     // Status Change
     newStatus: 'New Status',
