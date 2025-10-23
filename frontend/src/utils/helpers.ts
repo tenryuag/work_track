@@ -67,6 +67,16 @@ export const getStatusColor = (status: OrderStatus): string => {
   return colors[status];
 };
 
+export const getColumnColor = (status: OrderStatus): string => {
+  const colors: Record<OrderStatus, string> = {
+    PENDING: 'bg-orange-50 dark:bg-orange-950/30',
+    IN_PROGRESS: 'bg-blue-50 dark:bg-blue-950/30',
+    COMPLETED: 'bg-green-50 dark:bg-green-950/30',
+    DELIVERED: 'bg-purple-50 dark:bg-purple-950/30',
+  };
+  return colors[status];
+};
+
 export const isOverdue = (deadline: string): boolean => {
   return new Date(deadline) < new Date();
 };
