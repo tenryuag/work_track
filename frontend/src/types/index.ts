@@ -17,6 +17,31 @@ export interface UserBasic {
   email: string;
 }
 
+export interface Customer {
+  id: number;
+  name: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CustomerBasic {
+  id: number;
+  name: string;
+  company?: string;
+}
+
+export interface CustomerRequest {
+  name: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -39,6 +64,7 @@ export interface Order {
   status: OrderStatus;
   assignedTo: UserBasic;
   createdBy: UserBasic;
+  customer?: CustomerBasic;
   deadline: string;
   machine?: string;
   createdAt: string;
@@ -51,6 +77,7 @@ export interface OrderRequest {
   description?: string;
   priority: OrderPriority;
   assignedToId: number;
+  customerId?: number;
   deadline: string;
 }
 
