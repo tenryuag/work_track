@@ -4,12 +4,12 @@ import type {
   CustomerRequest,
   LoginRequest,
   LoginResponse,
+  Material,
+  MaterialRequest,
   Order,
   OrderRequest,
   StatusChangeRequest,
-  UserBasic,
-  Customer,
-  CustomerRequest
+  UserBasic
 } from '../types';
 
 const API_URL = 'http://localhost:8080/api';
@@ -78,6 +78,15 @@ export const customersAPI = {
   create: (data: CustomerRequest) => api.post<Customer>('/customers', data),
   update: (id: number, data: CustomerRequest) => api.put<Customer>(`/customers/${id}`, data),
   delete: (id: number) => api.delete(`/customers/${id}`),
+};
+
+// Materials API
+export const materialsAPI = {
+  getAll: () => api.get<Material[]>('/materials'),
+  getById: (id: number) => api.get<Material>(`/materials/${id}`),
+  create: (data: MaterialRequest) => api.post<Material>('/materials', data),
+  update: (id: number, data: MaterialRequest) => api.put<Material>(`/materials/${id}`, data),
+  delete: (id: number) => api.delete(`/materials/${id}`),
 };
 
 export default api;
