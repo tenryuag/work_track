@@ -19,6 +19,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
 } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
@@ -92,10 +93,26 @@ const HomePage: React.FC = () => {
     if (!over) return;
 
     const orderId = active.id as number;
-    const newStatus = over.id as OrderStatus;
     const order = orders.find((o) => o.id === orderId);
 
-    if (!order || order.status === newStatus) return;
+    if (!order) return;
+
+    // Determine the target status
+    // If dropped on a column, use the column's status
+    // If dropped on another order, find the order's status
+    let newStatus: OrderStatus;
+
+    if (over.data.current?.type === 'column') {
+      newStatus = over.data.current.status;
+    } else {
+      // Dropped on another order, find which column it belongs to
+      const targetOrder = orders.find((o) => o.id === over.id);
+      if (!targetOrder) return;
+      newStatus = targetOrder.status;
+    }
+
+    // If same status, no need to update
+    if (order.status === newStatus) return;
 
     // Check permissions
     if (!canDragOrder(order)) {
@@ -291,7 +308,7 @@ interface KanbanColumnProps {
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({ status, orders, title, onQuickEdit, onViewDetails }) => {
   const { t } = useLanguage();
-  const { setNodeRef } = useSortable({
+  const { setNodeRef } = useDroppable({
     id: status,
     data: {
       type: 'column',
