@@ -104,6 +104,23 @@ export const translations = {
     theme: 'テーマ',
     lightMode: 'ライトモード',
     darkMode: 'ダークモード',
+
+    // Customers
+    customers: '顧客',
+    customer: '顧客',
+    customerManagement: '顧客管理',
+    addCustomer: '顧客を追加',
+    editCustomer: '顧客を編集',
+    noCustomers: '顧客がいません',
+    name: '名前',
+    company: '会社',
+    phone: '電話番号',
+    address: '住所',
+    confirmDeleteCustomer: 'この顧客を削除してもよろしいですか？',
+    errorSavingCustomer: '顧客の保存に失敗しました',
+    errorDeletingCustomer: '顧客の削除に失敗しました',
+    selectCustomer: '顧客を選択',
+    home: 'ホーム',
   },
   en: {
     // Common
@@ -210,6 +227,23 @@ export const translations = {
     theme: 'Theme',
     lightMode: 'Light Mode',
     darkMode: 'Dark Mode',
+
+    // Customers
+    customers: 'Customers',
+    customer: 'Customer',
+    customerManagement: 'Customer Management',
+    addCustomer: 'Add Customer',
+    editCustomer: 'Edit Customer',
+    noCustomers: 'No customers available',
+    name: 'Name',
+    company: 'Company',
+    phone: 'Phone',
+    address: 'Address',
+    confirmDeleteCustomer: 'Are you sure you want to delete this customer?',
+    errorSavingCustomer: 'Failed to save customer',
+    errorDeletingCustomer: 'Failed to delete customer',
+    selectCustomer: 'Select customer',
+    home: 'Home',
   },
 };
 

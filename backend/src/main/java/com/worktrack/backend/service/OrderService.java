@@ -3,9 +3,11 @@ package com.worktrack.backend.service;
 import com.worktrack.backend.dto.OrderRequest;
 import com.worktrack.backend.dto.OrderResponse;
 import com.worktrack.backend.dto.StatusChangeRequest;
+import com.worktrack.backend.entity.Customer;
 import com.worktrack.backend.entity.Order;
 import com.worktrack.backend.entity.StatusLog;
 import com.worktrack.backend.entity.User;
+import com.worktrack.backend.repository.CustomerRepository;
 import com.worktrack.backend.repository.OrderRepository;
 import com.worktrack.backend.repository.StatusLogRepository;
 import com.worktrack.backend.repository.UserRepository;
@@ -30,6 +32,9 @@ public class OrderService {
     @Autowired
     private StatusLogRepository statusLogRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         User currentUser = getCurrentUser();
@@ -44,6 +49,13 @@ public class OrderService {
         order.setAssignedTo(assignedUser);
         order.setCreatedBy(currentUser);
         order.setDeadline(request.getDeadline());
+
+        // Set customer if provided
+        if (request.getCustomerId() != null) {
+            Customer customer = customerRepository.findById(request.getCustomerId())
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+            order.setCustomer(customer);
+        }
 
         Order savedOrder = orderRepository.save(order);
         return mapToResponse(savedOrder);
@@ -137,6 +149,15 @@ public class OrderService {
         order.setAssignedTo(assignedUser);
         order.setDeadline(request.getDeadline());
 
+        // Update customer if provided
+        if (request.getCustomerId() != null) {
+            Customer customer = customerRepository.findById(request.getCustomerId())
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+            order.setCustomer(customer);
+        } else {
+            order.setCustomer(null);
+        }
+
         Order savedOrder = orderRepository.save(order);
         return mapToResponse(savedOrder);
     }
@@ -201,6 +222,14 @@ public class OrderService {
                     order.getCreatedBy().getId(),
                     order.getCreatedBy().getName(),
                     order.getCreatedBy().getEmail()
+            ));
+        }
+
+        if (order.getCustomer() != null) {
+            response.setCustomer(new OrderResponse.CustomerBasicDTO(
+                    order.getCustomer().getId(),
+                    order.getCustomer().getName(),
+                    order.getCustomer().getCompany()
             ));
         }
 

@@ -12,6 +12,7 @@ public class OrderResponse {
     private String status;
     private UserBasicDTO assignedTo;
     private UserBasicDTO createdBy;
+    private CustomerBasicDTO customer;
     private LocalDate deadline;
     private String machine;
     private LocalDateTime createdAt;
@@ -21,7 +22,7 @@ public class OrderResponse {
     public OrderResponse() {
     }
 
-    public OrderResponse(Long id, String product, String description, String priority, String status, UserBasicDTO assignedTo, UserBasicDTO createdBy, LocalDate deadline, String machine, LocalDateTime createdAt, LocalDateTime updatedAt, List<StatusLogDTO> statusLogs) {
+    public OrderResponse(Long id, String product, String description, String priority, String status, UserBasicDTO assignedTo, UserBasicDTO createdBy, CustomerBasicDTO customer, LocalDate deadline, String machine, LocalDateTime createdAt, LocalDateTime updatedAt, List<StatusLogDTO> statusLogs) {
         this.id = id;
         this.product = product;
         this.description = description;
@@ -29,6 +30,7 @@ public class OrderResponse {
         this.status = status;
         this.assignedTo = assignedTo;
         this.createdBy = createdBy;
+        this.customer = customer;
         this.deadline = deadline;
         this.machine = machine;
         this.createdAt = createdAt;
@@ -90,6 +92,14 @@ public class OrderResponse {
 
     public void setCreatedBy(UserBasicDTO createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public CustomerBasicDTO getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerBasicDTO customer) {
+        this.customer = customer;
     }
 
     public LocalDate getDeadline() {
@@ -168,6 +178,45 @@ public class OrderResponse {
 
         public void setEmail(String email) {
             this.email = email;
+        }
+    }
+
+    public static class CustomerBasicDTO {
+        private Long id;
+        private String name;
+        private String company;
+
+        public CustomerBasicDTO() {
+        }
+
+        public CustomerBasicDTO(Long id, String name, String company) {
+            this.id = id;
+            this.name = name;
+            this.company = company;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCompany() {
+            return company;
+        }
+
+        public void setCompany(String company) {
+            this.company = company;
         }
     }
 
