@@ -1,0 +1,69 @@
+version: '3.8'
+
+# Development environment with hot-reload
+# Usage: docker-compose -f docker-compose.dev.yml up
+
+services:
+  # PostgreSQL Database (same as production)
+  db:
+    image: postgres:16-alpine
+    container_name: worktrack-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: worktrackdb
+      POSTGRES_USER: worktrack
+      POSTGRES_PASSWORD: devpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - worktrack-dev
+
+  # Backend with hot-reload (runs with mvn spring-boot:run)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: worktrack-backend-dev
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://db:5432/worktrackdb
+      DB_USERNAME: worktrack
+      DB_PASSWORD: devpassword
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src:ro
+    networks:
+      - worktrack-dev
+
+  # Frontend with Vite dev server
+  frontend:
+    image: node:20-alpine
+    container_name: worktrack-frontend-dev
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - worktrack-dev
+
+networks:
+  worktrack-dev:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+    driver: local

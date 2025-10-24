@@ -39,3 +39,7 @@ logs/
 # Database
 *.db
 *.sqlite
+
+# Docker & Environment
+.env
+docker-compose.override.yml

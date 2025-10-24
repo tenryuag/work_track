@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: worktrack-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-worktrackdb}
+      POSTGRES_USER: ${DB_USERNAME:-worktrack}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - worktrack-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-worktrack}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: worktrack-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-worktrackdb}
+      DB_USERNAME: ${DB_USERNAME:-worktrack}
+      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      JWT_SECRET: ${JWT_SECRET:-worktrack2025secretkeymustbelongenoughforhs512algorithm}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+    networks:
+      - worktrack-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # React Frontend + Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: worktrack-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # For nginx-proxy (update with your subdomain)
+      VIRTUAL_HOST: ${VIRTUAL_HOST:-worktrack.example.com}
+      LETSENCRYPT_HOST: ${LETSENCRYPT_HOST:-worktrack.example.com}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:-admin@example.com}
+    networks:
+      - worktrack-network
+      - nginx-proxy  # External network for nginx-proxy
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  worktrack-network:
+    driver: bridge
+  nginx-proxy:
+    external: true  # Assumes you already have nginx-proxy network
+
+volumes:
+  postgres_data:
+    driver: local
