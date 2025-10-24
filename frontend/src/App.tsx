@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import HomePage from './pages/HomePage';
 import CustomersPage from './pages/CustomersPage';
 import MaterialsPage from './pages/MaterialsPage';
+import UsersPage from './pages/UsersPage';
 
 const App: React.FC = () => {
   return (
@@ -38,6 +39,14 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute requireAdmin>
                     <MaterialsPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/users"
+                element={
+                  <PrivateRoute requireAdmin>
+                    <UsersPage />
                   </PrivateRoute>
                 }
               />
