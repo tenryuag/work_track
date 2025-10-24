@@ -116,6 +116,7 @@ export const translations = {
     // Materials
     materials: '材料',
     material: '材料',
+    selectMaterial: '材料を選択',
     newMaterial: '新規材料',
     editMaterial: '材料を編集',
     totalMaterials: '全材料数',
@@ -125,6 +126,8 @@ export const translations = {
     unit: '単位',
     unitPlaceholder: '例: kg, m, 個, L',
     stockQuantity: '在庫数量',
+    quantity: '数量',
+    quantityPlaceholder: '例: 10.5',
 
     // Language
     language: '言語',
@@ -256,6 +259,7 @@ export const translations = {
     // Materials
     materials: 'Materials',
     material: 'Material',
+    selectMaterial: 'Select material',
     newMaterial: 'New Material',
     editMaterial: 'Edit Material',
     totalMaterials: 'Total Materials',
@@ -265,6 +269,8 @@ export const translations = {
     unit: 'Unit',
     unitPlaceholder: 'e.g., kg, m, pcs, L',
     stockQuantity: 'Stock Quantity',
+    quantity: 'Quantity',
+    quantityPlaceholder: 'e.g., 10.5',
 
     // Language
     language: 'Language',

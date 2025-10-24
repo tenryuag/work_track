@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import Modal from './Modal';
-import { ordersAPI, usersAPI, customersAPI } from '../services/api';
-import type { OrderRequest, OrderPriority, UserBasic, Customer } from '../types';
+import { ordersAPI, usersAPI, customersAPI, materialsAPI } from '../services/api';
+import type { OrderRequest, OrderPriority, UserBasic, Customer, Material } from '../types';
 import { Save } from 'lucide-react';
 import { getPriorityLabel } from '../utils/translationHelpers';
 
@@ -16,6 +16,7 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
   const { t } = useLanguage();
   const [operators, setOperators] = useState<UserBasic[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,6 +26,8 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
     priority: 'MEDIUM',
     assignedToId: 0,
     customerId: undefined,
+    materialId: undefined,
+    quantity: undefined,
     deadline: '',
   });
 
@@ -32,6 +35,7 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
     if (isOpen) {
       fetchOperators();
       fetchCustomers();
+      fetchMaterials();
     }
   }, [isOpen]);
 
@@ -50,6 +54,15 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
       setCustomers(response.data);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
+    }
+  };
+
+  const fetchMaterials = async () => {
+    try {
+      const response = await materialsAPI.getAll();
+      setMaterials(response.data);
+    } catch (err) {
+      console.error('Failed to fetch materials:', err);
     }
   };
 
@@ -189,6 +202,44 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({ isOpen, onClose, onSucces
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Material */}
+        <div>
+          <label htmlFor="material" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            {t('material')}
+          </label>
+          <select
+            id="material"
+            value={formData.materialId || ''}
+            onChange={(e) =>
+              setFormData({ ...formData, materialId: e.target.value ? Number(e.target.value) : undefined })
+            }
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          >
+            <option value="">{t('selectMaterial')}</option>
+            {materials.map((material) => (
+              <option key={material.id} value={material.id}>
+                {material.name}{material.unit ? ` (${material.unit})` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Quantity */}
+        <div>
+          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            {t('quantity')}
+          </label>
+          <input
+            id="quantity"
+            type="number"
+            step="0.01"
+            value={formData.quantity || ''}
+            onChange={(e) => setFormData({ ...formData, quantity: e.target.value ? parseFloat(e.target.value) : undefined })}
+            placeholder={t('quantityPlaceholder')}
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          />
         </div>
 
         {/* Deadline */}
