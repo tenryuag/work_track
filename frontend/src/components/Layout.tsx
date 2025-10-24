@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { LogOut, User, Globe, Sun, Moon, Home, Users, Package } from 'lucide-react';
+import { LogOut, User, Globe, Sun, Moon, Home, Users, Package, UserCog } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -155,6 +155,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               >
                 <Package className="h-4 w-4" />
                 <span>{t('materials')}</span>
+              </button>
+              <button
+                onClick={() => navigate('/users')}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  location.pathname === '/users'
+                    ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <UserCog className="h-4 w-4" />
+                <span>{t('users')}</span>
               </button>
             </div>
           </div>

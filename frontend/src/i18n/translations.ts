@@ -129,6 +129,22 @@ export const translations = {
     quantity: '数量',
     quantityPlaceholder: '例: 10.5',
 
+    // Users
+    users: 'ユーザー',
+    newUser: '新規ユーザー',
+    editUser: 'ユーザーを編集',
+    totalUsers: '全ユーザー数',
+    fetchUsersFailed: 'ユーザーの取得に失敗しました',
+    confirmDeleteUser: 'このユーザーを削除してもよろしいですか？',
+    noUsers: 'ユーザーがいません',
+    role: '役割',
+    status: 'ステータス',
+    active: 'アクティブ',
+    inactive: '非アクティブ',
+    passwordRequired: 'パスワードは必須です',
+    passwordPlaceholder: '変更する場合のみ入力',
+    passwordHint: '空欄のままにすると、パスワードは変更されません',
+
     // Language
     language: '言語',
     japanese: '日本語',
@@ -271,6 +287,22 @@ export const translations = {
     stockQuantity: 'Stock Quantity',
     quantity: 'Quantity',
     quantityPlaceholder: 'e.g., 10.5',
+
+    // Users
+    users: 'Users',
+    newUser: 'New User',
+    editUser: 'Edit User',
+    totalUsers: 'Total Users',
+    fetchUsersFailed: 'Failed to fetch users',
+    confirmDeleteUser: 'Are you sure you want to delete this user?',
+    noUsers: 'No users available',
+    role: 'Role',
+    status: 'Status',
+    active: 'Active',
+    inactive: 'Inactive',
+    passwordRequired: 'Password is required',
+    passwordPlaceholder: 'Leave blank to keep current password',
+    passwordHint: 'Leave blank to keep current password',
 
     // Language
     language: 'Language',

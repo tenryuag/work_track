@@ -122,3 +122,20 @@ export interface MaterialRequest {
   unit?: string;
   stockQuantity?: number;
 }
+
+export interface UserDetail {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserRequest {
+  name: string;
+  email: string;
+  password?: string;
+  role: string;
+}

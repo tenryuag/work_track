@@ -9,7 +9,9 @@ import type {
   Order,
   OrderRequest,
   StatusChangeRequest,
-  UserBasic
+  UserBasic,
+  UserDetail,
+  UserRequest
 } from '../types';
 
 const API_URL = 'http://localhost:8080/api';
@@ -68,7 +70,13 @@ export const ordersAPI = {
 // Users API
 export const usersAPI = {
   getAllOperators: () => api.get<UserBasic[]>('/users/operators'),
-  getAll: () => api.get<UserBasic[]>('/users'),
+  getAllBasic: () => api.get<UserBasic[]>('/users/basic'),
+  // User management (admin-only)
+  getAll: () => api.get<UserDetail[]>('/users'),
+  getById: (id: number) => api.get<UserDetail>(`/users/${id}`),
+  create: (data: UserRequest) => api.post<UserDetail>('/users', data),
+  update: (id: number, data: UserRequest) => api.put<UserDetail>(`/users/${id}`, data),
+  delete: (id: number) => api.delete(`/users/${id}`),
 };
 
 // Customers API
