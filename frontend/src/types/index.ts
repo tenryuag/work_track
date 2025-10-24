@@ -34,6 +34,12 @@ export interface CustomerBasic {
   company?: string;
 }
 
+export interface MaterialBasic {
+  id: number;
+  name: string;
+  unit?: string;
+}
+
 export interface CustomerRequest {
   name: string;
   company?: string;
@@ -65,6 +71,8 @@ export interface Order {
   assignedTo: UserBasic;
   createdBy: UserBasic;
   customer?: CustomerBasic;
+  material?: MaterialBasic;
+  quantity?: number;
   deadline: string;
   machine?: string;
   createdAt: string;
@@ -78,6 +86,8 @@ export interface OrderRequest {
   priority: OrderPriority;
   assignedToId: number;
   customerId?: number;
+  materialId?: number;
+  quantity?: number;
   deadline: string;
 }
 

@@ -10,6 +10,7 @@ import {
   RefreshCw,
   Trash2,
   Settings,
+  Package,
 } from 'lucide-react';
 import {
   formatDate,
@@ -218,6 +219,22 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   <p className="text-gray-900 dark:text-gray-100">{order.customer.name}</p>
                   {order.customer.company && (
                     <p className="text-sm text-gray-500 dark:text-gray-400">{order.customer.company}</p>
+                  )}
+                </div>
+              )}
+
+              {order.material && (
+                <div>
+                  <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-1">
+                    <Package className="h-4 w-4" />
+                    <span className="text-sm font-medium">{t('material')}</span>
+                  </div>
+                  <p className="text-gray-900 dark:text-gray-100">{order.material.name}</p>
+                  {order.material.unit && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{order.material.unit}</p>
+                  )}
+                  {order.quantity && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('quantity')}: {order.quantity}</p>
                   )}
                 </div>
               )}

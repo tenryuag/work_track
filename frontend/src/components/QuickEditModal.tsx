@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import type { Order, OrderStatus, UserBasic, Customer } from '../types';
-import { ordersAPI, usersAPI, customersAPI } from '../services/api';
+import type { Order, OrderStatus, UserBasic, Customer, Material } from '../types';
+import { ordersAPI, usersAPI, customersAPI, materialsAPI } from '../services/api';
 import { X } from 'lucide-react';
 import { getStatusLabel } from '../utils/translationHelpers';
 
@@ -16,6 +16,7 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
   const { t } = useLanguage();
   const [operators, setOperators] = useState<UserBasic[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     assignedToId: order.assignedTo.id,
@@ -23,12 +24,15 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
     description: order.description || '',
     status: order.status,
     customerId: order.customer?.id,
+    materialId: order.material?.id,
+    quantity: order.quantity,
   });
 
   useEffect(() => {
     if (isOpen) {
       fetchOperators();
       fetchCustomers();
+      fetchMaterials();
     }
   }, [isOpen]);
 
@@ -50,6 +54,15 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
     }
   };
 
+  const fetchMaterials = async () => {
+    try {
+      const response = await materialsAPI.getAll();
+      setMaterials(response.data);
+    } catch (err) {
+      console.error('Failed to fetch materials:', err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -63,6 +76,8 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
         deadline: formData.deadline,
         description: formData.description,
         customerId: formData.customerId,
+        materialId: formData.materialId,
+        quantity: formData.quantity,
       });
 
       // If status changed, update status separately
@@ -146,6 +161,45 @@ const QuickEditModal: React.FC<QuickEditModalProps> = ({ order, isOpen, onClose,
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Material */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('material')}
+            </label>
+            <select
+              value={formData.materialId || ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  materialId: e.target.value ? Number(e.target.value) : undefined,
+                })
+              }
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            >
+              <option value="">{t('selectMaterial')}</option>
+              {materials.map((material) => (
+                <option key={material.id} value={material.id}>
+                  {material.name} {material.unit && `(${material.unit})`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Quantity */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('quantity')}
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.quantity || ''}
+              onChange={(e) => setFormData({ ...formData, quantity: e.target.value ? parseFloat(e.target.value) : undefined })}
+              placeholder={t('quantityPlaceholder')}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
           </div>
 
           {/* Deadline */}
