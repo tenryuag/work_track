@@ -43,6 +43,13 @@ public class Order {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id")
+    private Material material;
+
+    @Column
+    private Double quantity;
+
     @Column(nullable = false)
     private LocalDate deadline;
 
@@ -77,7 +84,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, String product, String description, Priority priority, Status status, User assignedTo, User createdBy, Customer customer, LocalDate deadline, String machine, List<StatusLog> statusLogs, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Order(Long id, String product, String description, Priority priority, Status status, User assignedTo, User createdBy, Customer customer, Material material, Double quantity, LocalDate deadline, String machine, List<StatusLog> statusLogs, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.product = product;
         this.description = description;
@@ -86,6 +93,8 @@ public class Order {
         this.assignedTo = assignedTo;
         this.createdBy = createdBy;
         this.customer = customer;
+        this.material = material;
+        this.quantity = quantity;
         this.deadline = deadline;
         this.machine = machine;
         this.statusLogs = statusLogs;
@@ -196,5 +205,21 @@ public class Order {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
     }
 }

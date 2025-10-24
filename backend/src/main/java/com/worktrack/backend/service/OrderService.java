@@ -4,10 +4,12 @@ import com.worktrack.backend.dto.OrderRequest;
 import com.worktrack.backend.dto.OrderResponse;
 import com.worktrack.backend.dto.StatusChangeRequest;
 import com.worktrack.backend.entity.Customer;
+import com.worktrack.backend.entity.Material;
 import com.worktrack.backend.entity.Order;
 import com.worktrack.backend.entity.StatusLog;
 import com.worktrack.backend.entity.User;
 import com.worktrack.backend.repository.CustomerRepository;
+import com.worktrack.backend.repository.MaterialRepository;
 import com.worktrack.backend.repository.OrderRepository;
 import com.worktrack.backend.repository.StatusLogRepository;
 import com.worktrack.backend.repository.UserRepository;
@@ -35,6 +37,9 @@ public class OrderService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private MaterialRepository materialRepository;
+
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         User currentUser = getCurrentUser();
@@ -55,6 +60,18 @@ public class OrderService {
             Customer customer = customerRepository.findById(request.getCustomerId())
                     .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
             order.setCustomer(customer);
+        }
+
+        // Set material if provided
+        if (request.getMaterialId() != null) {
+            Material material = materialRepository.findById(request.getMaterialId())
+                    .orElseThrow(() -> new RuntimeException("Material no encontrado"));
+            order.setMaterial(material);
+        }
+
+        // Set quantity if provided
+        if (request.getQuantity() != null) {
+            order.setQuantity(request.getQuantity());
         }
 
         Order savedOrder = orderRepository.save(order);
@@ -158,6 +175,18 @@ public class OrderService {
             order.setCustomer(null);
         }
 
+        // Update material if provided
+        if (request.getMaterialId() != null) {
+            Material material = materialRepository.findById(request.getMaterialId())
+                    .orElseThrow(() -> new RuntimeException("Material no encontrado"));
+            order.setMaterial(material);
+        } else {
+            order.setMaterial(null);
+        }
+
+        // Update quantity if provided
+        order.setQuantity(request.getQuantity());
+
         Order savedOrder = orderRepository.save(order);
         return mapToResponse(savedOrder);
     }
@@ -232,6 +261,16 @@ public class OrderService {
                     order.getCustomer().getCompany()
             ));
         }
+
+        if (order.getMaterial() != null) {
+            response.setMaterial(new OrderResponse.MaterialBasicDTO(
+                    order.getMaterial().getId(),
+                    order.getMaterial().getName(),
+                    order.getMaterial().getUnit()
+            ));
+        }
+
+        response.setQuantity(order.getQuantity());
 
         return response;
     }

@@ -13,6 +13,8 @@ public class OrderResponse {
     private UserBasicDTO assignedTo;
     private UserBasicDTO createdBy;
     private CustomerBasicDTO customer;
+    private MaterialBasicDTO material;
+    private Double quantity;
     private LocalDate deadline;
     private String machine;
     private LocalDateTime createdAt;
@@ -22,7 +24,7 @@ public class OrderResponse {
     public OrderResponse() {
     }
 
-    public OrderResponse(Long id, String product, String description, String priority, String status, UserBasicDTO assignedTo, UserBasicDTO createdBy, CustomerBasicDTO customer, LocalDate deadline, String machine, LocalDateTime createdAt, LocalDateTime updatedAt, List<StatusLogDTO> statusLogs) {
+    public OrderResponse(Long id, String product, String description, String priority, String status, UserBasicDTO assignedTo, UserBasicDTO createdBy, CustomerBasicDTO customer, MaterialBasicDTO material, Double quantity, LocalDate deadline, String machine, LocalDateTime createdAt, LocalDateTime updatedAt, List<StatusLogDTO> statusLogs) {
         this.id = id;
         this.product = product;
         this.description = description;
@@ -31,6 +33,8 @@ public class OrderResponse {
         this.assignedTo = assignedTo;
         this.createdBy = createdBy;
         this.customer = customer;
+        this.material = material;
+        this.quantity = quantity;
         this.deadline = deadline;
         this.machine = machine;
         this.createdAt = createdAt;
@@ -100,6 +104,22 @@ public class OrderResponse {
 
     public void setCustomer(CustomerBasicDTO customer) {
         this.customer = customer;
+    }
+
+    public MaterialBasicDTO getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(MaterialBasicDTO material) {
+        this.material = material;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
     }
 
     public LocalDate getDeadline() {
@@ -217,6 +237,45 @@ public class OrderResponse {
 
         public void setCompany(String company) {
             this.company = company;
+        }
+    }
+
+    public static class MaterialBasicDTO {
+        private Long id;
+        private String name;
+        private String unit;
+
+        public MaterialBasicDTO() {
+        }
+
+        public MaterialBasicDTO(Long id, String name, String unit) {
+            this.id = id;
+            this.name = name;
+            this.unit = unit;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
         }
     }
 
