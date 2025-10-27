@@ -51,6 +51,21 @@ export const translations = {
     fetchOrdersFailed: '注文の取得に失敗しました',
     dropOrdersHere: 'ここに注文をドロップ',
 
+    // Filters
+    search: '検索',
+    searchByProductDescriptionOrMachine: '製品名、説明、または機械番号で検索',
+    searchByNameOrEmail: '名前またはメールアドレスで検索',
+    searchByNameCompanyOrEmail: '名前、会社名、またはメールアドレスで検索',
+    searchByNameOrDescription: '名前または説明で検索',
+    allStatuses: 'すべてのステータス',
+    allPriorities: 'すべての優先度',
+    allUsers: 'すべてのユーザー',
+    allCustomers: 'すべての顧客',
+    allMaterials: 'すべての材料',
+    allRoles: 'すべての役割',
+    clearFilters: 'フィルターをクリア',
+    showingResults: '{count} / {total} 件を表示',
+
     // Order Card
     assignedTo: '担当者',
     deadline: '期限',
@@ -209,6 +224,21 @@ export const translations = {
     noOrders: 'No orders available',
     fetchOrdersFailed: 'Failed to fetch orders',
     dropOrdersHere: 'Drop orders here',
+
+    // Filters
+    search: 'Search',
+    searchByProductDescriptionOrMachine: 'Search by product, description, or machine',
+    searchByNameOrEmail: 'Search by name or email',
+    searchByNameCompanyOrEmail: 'Search by name, company, or email',
+    searchByNameOrDescription: 'Search by name or description',
+    allStatuses: 'All Statuses',
+    allPriorities: 'All Priorities',
+    allUsers: 'All Users',
+    allCustomers: 'All Customers',
+    allMaterials: 'All Materials',
+    allRoles: 'All Roles',
+    clearFilters: 'Clear Filters',
+    showingResults: 'Showing {count} of {total}',
 
     // Order Card
     assignedTo: 'Assigned to',

@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
+import FilterPanel from '../components/FilterPanel';
 import { customersAPI } from '../services/api';
 import type { Customer, CustomerRequest } from '../types';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { useFilters, filterHelpers } from '../hooks/useFilters';
 
 const CustomersPage: React.FC = () => {
   const { t } = useLanguage();
@@ -19,6 +21,41 @@ const CustomersPage: React.FC = () => {
     phone: '',
     address: '',
   });
+
+  // Filter configuration
+  const filterCustomersFn = (customer: Customer, filters: Record<string, any>) => {
+    // Text search (name, company, email, phone)
+    if (
+      filters.search &&
+      !filterHelpers.textMatches(customer.name, filters.search) &&
+      !filterHelpers.textMatches(customer.company, filters.search) &&
+      !filterHelpers.textMatches(customer.email, filters.search) &&
+      !filterHelpers.textMatches(customer.phone, filters.search)
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const {
+    filters,
+    filteredItems: filteredCustomers,
+    isFilterPanelOpen,
+    handleFilterChange,
+    handleClearFilters,
+    toggleFilterPanel,
+  } = useFilters(customers, filterCustomersFn);
+
+  // Filter configurations
+  const filterConfigs = useMemo(() => [
+    {
+      type: 'text' as const,
+      label: t('search'),
+      field: 'search',
+      placeholder: t('searchByNameCompanyOrEmail'),
+    },
+  ], [t]);
 
   useEffect(() => {
     fetchCustomers();
@@ -116,6 +153,20 @@ const CustomersPage: React.FC = () => {
           </button>
         </div>
 
+        {/* Filter Panel */}
+        {!loading && (
+          <FilterPanel
+            isOpen={isFilterPanelOpen}
+            onToggle={toggleFilterPanel}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            filterConfigs={filterConfigs}
+            resultsCount={filteredCustomers.length}
+            totalCount={customers.length}
+          />
+        )}
+
         {/* Loading */}
         {loading && (
           <div className="text-center py-12">
@@ -154,7 +205,7 @@ const CustomersPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {customers.map((customer) => (
+                {filteredCustomers.map((customer) => (
                   <tr key={customer.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                       {customer.name}
@@ -187,7 +238,7 @@ const CustomersPage: React.FC = () => {
               </tbody>
             </table>
 
-            {customers.length === 0 && (
+            {filteredCustomers.length === 0 && (
               <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 {t('noCustomers')}
               </div>

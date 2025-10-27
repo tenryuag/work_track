@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
@@ -6,11 +6,13 @@ import OrderCard from '../components/OrderCard';
 import QuickEditModal from '../components/QuickEditModal';
 import NewOrderModal from '../components/NewOrderModal';
 import OrderDetailModal from '../components/OrderDetailModal';
-import { ordersAPI } from '../services/api';
-import type { Order, OrderStatus } from '../types';
+import FilterPanel from '../components/FilterPanel';
+import { ordersAPI, usersAPI, customersAPI, materialsAPI } from '../services/api';
+import type { Order, OrderStatus, UserDetail, Customer, Material } from '../types';
 import { Plus } from 'lucide-react';
 import { getStatusLabel } from '../utils/translationHelpers';
 import { getColumnColor } from '../utils/helpers';
+import { useFilters, filterHelpers } from '../hooks/useFilters';
 import {
   DndContext,
   DragEndEvent,
@@ -27,6 +29,9 @@ import { CSS } from '@dnd-kit/utilities';
 
 const HomePage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<UserDetail[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
@@ -49,15 +54,74 @@ const HomePage: React.FC = () => {
     })
   );
 
+  // Filter configuration
+  const filterOrdersFn = (order: Order, filters: Record<string, any>) => {
+    // Text search (product, description, machine)
+    if (
+      filters.search &&
+      !filterHelpers.textMatches(order.product, filters.search) &&
+      !filterHelpers.textMatches(order.description, filters.search) &&
+      !filterHelpers.textMatches(order.machine, filters.search)
+    ) {
+      return false;
+    }
+
+    // Status filter
+    if (!filterHelpers.exactMatch(order.status, filters.status)) return false;
+
+    // Priority filter
+    if (!filterHelpers.exactMatch(order.priority, filters.priority)) return false;
+
+    // Assigned to filter
+    if (!filterHelpers.exactMatch(order.assignedTo?.id?.toString(), filters.assignedTo)) {
+      return false;
+    }
+
+    // Customer filter
+    if (!filterHelpers.exactMatch(order.customer?.id?.toString(), filters.customer)) {
+      return false;
+    }
+
+    // Material filter
+    if (!filterHelpers.exactMatch(order.material?.id?.toString(), filters.material)) {
+      return false;
+    }
+
+    // Deadline range filter
+    if (!filterHelpers.dateInRange(order.deadline, filters.deadline)) return false;
+
+    // Quantity range filter
+    if (!filterHelpers.numberInRange(order.quantity, filters.quantity)) return false;
+
+    return true;
+  };
+
+  const {
+    filters,
+    filteredItems: filteredOrders,
+    isFilterPanelOpen,
+    handleFilterChange,
+    handleClearFilters,
+    toggleFilterPanel,
+  } = useFilters(orders, filterOrdersFn);
+
   useEffect(() => {
-    fetchOrders();
+    fetchData();
   }, []);
 
-  const fetchOrders = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await ordersAPI.getAll();
-      setOrders(response.data);
+      const [ordersRes, usersRes, customersRes, materialsRes] = await Promise.all([
+        ordersAPI.getAll(),
+        usersAPI.getAll(),
+        customersAPI.getAll(),
+        materialsAPI.getAll(),
+      ]);
+      setOrders(ordersRes.data);
+      setUsers(usersRes.data);
+      setCustomers(customersRes.data);
+      setMaterials(materialsRes.data);
     } catch (err: any) {
       setError(t('fetchOrdersFailed'));
       console.error(err);
@@ -66,11 +130,85 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      const response = await ordersAPI.getAll();
+      setOrders(response.data);
+    } catch (err: any) {
+      setError(t('fetchOrdersFailed'));
+      console.error(err);
+    }
+  };
+
   const statuses: OrderStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED'];
 
   const getOrdersByStatus = (status: OrderStatus) => {
-    return orders.filter((order) => order.status === status);
+    return filteredOrders.filter((order) => order.status === status);
   };
+
+  // Filter configurations
+  const filterConfigs = useMemo(() => [
+    {
+      type: 'text' as const,
+      label: t('search'),
+      field: 'search',
+      placeholder: t('searchByProductDescriptionOrMachine'),
+    },
+    {
+      type: 'select' as const,
+      label: t('status'),
+      field: 'status',
+      placeholder: t('allStatuses'),
+      options: [
+        { value: 'PENDING', label: t('pending') },
+        { value: 'IN_PROGRESS', label: t('inProgress') },
+        { value: 'COMPLETED', label: t('completed') },
+        { value: 'DELIVERED', label: t('delivered') },
+      ],
+    },
+    {
+      type: 'select' as const,
+      label: t('priority'),
+      field: 'priority',
+      placeholder: t('allPriorities'),
+      options: [
+        { value: 'HIGH', label: t('high') },
+        { value: 'MEDIUM', label: t('medium') },
+        { value: 'LOW', label: t('low') },
+      ],
+    },
+    {
+      type: 'select' as const,
+      label: t('assignedTo'),
+      field: 'assignedTo',
+      placeholder: t('allUsers'),
+      options: users.map((u) => ({ value: u.id.toString(), label: u.name })),
+    },
+    {
+      type: 'select' as const,
+      label: t('customer'),
+      field: 'customer',
+      placeholder: t('allCustomers'),
+      options: customers.map((c) => ({ value: c.id.toString(), label: c.name })),
+    },
+    {
+      type: 'select' as const,
+      label: t('material'),
+      field: 'material',
+      placeholder: t('allMaterials'),
+      options: materials.map((m) => ({ value: m.id.toString(), label: m.name })),
+    },
+    {
+      type: 'daterange' as const,
+      label: t('deadline'),
+      field: 'deadline',
+    },
+    {
+      type: 'numberrange' as const,
+      label: t('quantity'),
+      field: 'quantity',
+    },
+  ], [users, customers, materials, t]);
 
   const canDragOrder = (order: Order): boolean => {
     if (isAdmin() || isManager()) return true;
@@ -185,6 +323,20 @@ const HomePage: React.FC = () => {
           </button>
         )}
       </div>
+
+      {/* Filter Panel - Only for Admin and Manager */}
+      {(isAdmin() || isManager()) && !loading && (
+        <FilterPanel
+          isOpen={isFilterPanelOpen}
+          onToggle={toggleFilterPanel}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+          filterConfigs={filterConfigs}
+          resultsCount={filteredOrders.length}
+          totalCount={orders.length}
+        />
+      )}
 
       {/* Loading State */}
       {loading && (
