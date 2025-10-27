@@ -13,11 +13,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - worktrack-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-worktrack}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # Spring Boot Backend
   backend:
@@ -27,8 +22,7 @@ services:
     container_name: worktrack-backend
     restart: unless-stopped
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-worktrackdb}
@@ -38,12 +32,6 @@ services:
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
     networks:
       - worktrack-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
   # React Frontend + Nginx
   frontend:
@@ -55,26 +43,20 @@ services:
     depends_on:
       - backend
     environment:
-      # For nginx-proxy (update with your subdomain)
       VIRTUAL_HOST: ${VIRTUAL_HOST:-worktrack.example.com}
       LETSENCRYPT_HOST: ${LETSENCRYPT_HOST:-worktrack.example.com}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:-admin@example.com}
     networks:
       - worktrack-network
-      - proxy-net  # External network for nginx-proxy
+      - nginx-proxy
     expose:
       - "80"
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 networks:
   worktrack-network:
     driver: bridge
-  proxy-net:
-    external: true  # nginx-proxy network on your VPS
+  nginx-proxy:
+    external: true
 
 volumes:
   postgres_data:
