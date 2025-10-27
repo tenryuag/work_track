@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
+import FilterPanel from '../components/FilterPanel';
 import { usersAPI } from '../services/api';
 import type { UserDetail, UserRequest } from '../types';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { useFilters, filterHelpers } from '../hooks/useFilters';
 
 const UsersPage: React.FC = () => {
   const { t } = useLanguage();
@@ -18,6 +20,69 @@ const UsersPage: React.FC = () => {
     password: '',
     role: 'OPERATOR',
   });
+
+  // Filter configuration
+  const filterUsersFn = (user: UserDetail, filters: Record<string, any>) => {
+    // Text search (name, email)
+    if (
+      filters.search &&
+      !filterHelpers.textMatches(user.name, filters.search) &&
+      !filterHelpers.textMatches(user.email, filters.search)
+    ) {
+      return false;
+    }
+
+    // Role filter
+    if (!filterHelpers.exactMatch(user.role, filters.role)) return false;
+
+    // Active status filter
+    if (filters.active !== '' && filters.active !== undefined && filters.active !== null) {
+      const isActive = filters.active === 'true';
+      if (user.active !== isActive) return false;
+    }
+
+    return true;
+  };
+
+  const {
+    filters,
+    filteredItems: filteredUsers,
+    isFilterPanelOpen,
+    handleFilterChange,
+    handleClearFilters,
+    toggleFilterPanel,
+  } = useFilters(users, filterUsersFn);
+
+  // Filter configurations
+  const filterConfigs = useMemo(() => [
+    {
+      type: 'text' as const,
+      label: t('search'),
+      field: 'search',
+      placeholder: t('searchByNameOrEmail'),
+    },
+    {
+      type: 'select' as const,
+      label: t('role'),
+      field: 'role',
+      placeholder: t('allRoles'),
+      options: [
+        { value: 'ADMIN', label: t('admin') },
+        { value: 'MANAGER', label: t('manager') },
+        { value: 'OPERATOR', label: t('operator') },
+      ],
+    },
+    {
+      type: 'select' as const,
+      label: t('status'),
+      field: 'active',
+      placeholder: t('allStatuses'),
+      options: [
+        { value: 'true', label: t('active') },
+        { value: 'false', label: t('inactive') },
+      ],
+    },
+  ], [t]);
 
   useEffect(() => {
     fetchUsers();
@@ -138,6 +203,20 @@ const UsersPage: React.FC = () => {
           </button>
         </div>
 
+        {/* Filter Panel */}
+        {!loading && (
+          <FilterPanel
+            isOpen={isFilterPanelOpen}
+            onToggle={toggleFilterPanel}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            filterConfigs={filterConfigs}
+            resultsCount={filteredUsers.length}
+            totalCount={users.length}
+          />
+        )}
+
         {/* Error Message */}
         {error && (
           <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400">
@@ -153,7 +232,7 @@ const UsersPage: React.FC = () => {
         ) : (
           <>
             {/* Users Table */}
-            {users.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <p className="text-gray-500 dark:text-gray-400">{t('noUsers')}</p>
               </div>
@@ -180,7 +259,7 @@ const UsersPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {users.map((user) => (
+                    {filteredUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                           {user.name}

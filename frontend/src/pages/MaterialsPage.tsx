@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
+import FilterPanel from '../components/FilterPanel';
 import { materialsAPI } from '../services/api';
 import type { Material, MaterialRequest } from '../types';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { useFilters, filterHelpers } from '../hooks/useFilters';
 
 const MaterialsPage: React.FC = () => {
   const { t } = useLanguage();
@@ -18,6 +20,50 @@ const MaterialsPage: React.FC = () => {
     unit: '',
     stockQuantity: 0,
   });
+
+  // Filter configuration
+  const filterMaterialsFn = (material: Material, filters: Record<string, any>) => {
+    // Text search (name, description, unit)
+    if (
+      filters.search &&
+      !filterHelpers.textMatches(material.name, filters.search) &&
+      !filterHelpers.textMatches(material.description, filters.search) &&
+      !filterHelpers.textMatches(material.unit, filters.search)
+    ) {
+      return false;
+    }
+
+    // Stock quantity range filter
+    if (!filterHelpers.numberInRange(material.stockQuantity, filters.stockQuantity)) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const {
+    filters,
+    filteredItems: filteredMaterials,
+    isFilterPanelOpen,
+    handleFilterChange,
+    handleClearFilters,
+    toggleFilterPanel,
+  } = useFilters(materials, filterMaterialsFn);
+
+  // Filter configurations
+  const filterConfigs = useMemo(() => [
+    {
+      type: 'text' as const,
+      label: t('search'),
+      field: 'search',
+      placeholder: t('searchByNameOrDescription'),
+    },
+    {
+      type: 'numberrange' as const,
+      label: t('stockQuantity'),
+      field: 'stockQuantity',
+    },
+  ], [t]);
 
   useEffect(() => {
     fetchMaterials();
@@ -114,6 +160,20 @@ const MaterialsPage: React.FC = () => {
           </button>
         </div>
 
+        {/* Filter Panel */}
+        {!loading && (
+          <FilterPanel
+            isOpen={isFilterPanelOpen}
+            onToggle={toggleFilterPanel}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            filterConfigs={filterConfigs}
+            resultsCount={filteredMaterials.length}
+            totalCount={materials.length}
+          />
+        )}
+
         {/* Error Message */}
         {error && (
           <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400">
@@ -129,7 +189,7 @@ const MaterialsPage: React.FC = () => {
         ) : (
           <>
             {/* Materials Table */}
-            {materials.length === 0 ? (
+            {filteredMaterials.length === 0 ? (
               <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <p className="text-gray-500 dark:text-gray-400">{t('noMaterials')}</p>
               </div>
@@ -156,7 +216,7 @@ const MaterialsPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {materials.map((material) => (
+                    {filteredMaterials.map((material) => (
                       <tr key={material.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                           {material.name}
