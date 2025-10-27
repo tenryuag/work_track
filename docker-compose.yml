@@ -61,7 +61,7 @@ services:
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:-admin@example.com}
     networks:
       - worktrack-network
-      - nginx-proxy  # External network for nginx-proxy
+      - proxy-net  # External network for nginx-proxy
     expose:
       - "80"
     healthcheck:
@@ -73,8 +73,8 @@ services:
 networks:
   worktrack-network:
     driver: bridge
-  nginx-proxy:
-    external: true  # Assumes you already have nginx-proxy network
+  proxy-net:
+    external: true  # nginx-proxy network on your VPS
 
 volumes:
   postgres_data:
