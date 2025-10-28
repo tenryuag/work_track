@@ -23,8 +23,22 @@ import {
   Package,
   CheckCircle,
   Clock,
+  Calendar,
 } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  startOfWeek,
+  endOfWeek,
+  startOfYear,
+  endOfYear,
+  startOfDay,
+  endOfDay,
+} from 'date-fns';
+
+type DateRange = 'today' | 'week' | 'month' | 'last3months' | 'last6months' | 'year' | 'all' | 'custom';
 
 const DashboardPage: React.FC = () => {
   const { t } = useLanguage();
@@ -33,6 +47,9 @@ const DashboardPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState<DateRange>('all');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -58,19 +75,53 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  // KPIs
-  const totalOrders = orders.length;
-  const completedOrders = orders.filter((o) => o.status === 'COMPLETED').length;
-  const deliveredOrders = orders.filter((o) => o.status === 'DELIVERED').length;
-  const pendingOrders = orders.filter((o) => o.status === 'PENDING').length;
-  const inProgressOrders = orders.filter((o) => o.status === 'IN_PROGRESS').length;
+  // Get date range bounds
+  const getDateRangeBounds = () => {
+    const now = new Date();
+    switch (dateRange) {
+      case 'today':
+        return { start: startOfDay(now), end: endOfDay(now) };
+      case 'week':
+        return { start: startOfWeek(now), end: endOfWeek(now) };
+      case 'month':
+        return { start: startOfMonth(now), end: endOfMonth(now) };
+      case 'last3months':
+        return { start: subMonths(now, 3), end: now };
+      case 'last6months':
+        return { start: subMonths(now, 6), end: now };
+      case 'year':
+        return { start: startOfYear(now), end: endOfYear(now) };
+      case 'custom':
+        if (customStartDate && customEndDate) {
+          return {
+            start: startOfDay(new Date(customStartDate)),
+            end: endOfDay(new Date(customEndDate)),
+          };
+        }
+        return null;
+      case 'all':
+      default:
+        return null;
+    }
+  };
 
-  const currentMonthStart = startOfMonth(new Date());
-  const currentMonthEnd = endOfMonth(new Date());
-  const ordersThisMonth = orders.filter((o) => {
-    const createdDate = new Date(o.createdAt);
-    return createdDate >= currentMonthStart && createdDate <= currentMonthEnd;
-  }).length;
+  // Filter orders by date range
+  const filteredOrders = (() => {
+    const bounds = getDateRangeBounds();
+    if (!bounds) return orders;
+
+    return orders.filter((order) => {
+      const orderDate = new Date(order.createdAt);
+      return orderDate >= bounds.start && orderDate <= bounds.end;
+    });
+  })();
+
+  // KPIs (using filtered orders)
+  const totalOrders = filteredOrders.length;
+  const completedOrders = filteredOrders.filter((o) => o.status === 'COMPLETED').length;
+  const deliveredOrders = filteredOrders.filter((o) => o.status === 'DELIVERED').length;
+  const pendingOrders = filteredOrders.filter((o) => o.status === 'PENDING').length;
+  const inProgressOrders = filteredOrders.filter((o) => o.status === 'IN_PROGRESS').length;
 
   const completionRate = totalOrders > 0 ? ((completedOrders + deliveredOrders) / totalOrders) * 100 : 0;
 
@@ -84,15 +135,15 @@ const DashboardPage: React.FC = () => {
 
   // Orders by priority
   const ordersByPriority = [
-    { name: t('high'), value: orders.filter((o) => o.priority === 'HIGH').length },
-    { name: t('medium'), value: orders.filter((o) => o.priority === 'MEDIUM').length },
-    { name: t('low'), value: orders.filter((o) => o.priority === 'LOW').length },
+    { name: t('high'), value: filteredOrders.filter((o) => o.priority === 'HIGH').length },
+    { name: t('medium'), value: filteredOrders.filter((o) => o.priority === 'MEDIUM').length },
+    { name: t('low'), value: filteredOrders.filter((o) => o.priority === 'LOW').length },
   ];
 
   // Top materials used
   const materialUsage = materials
     .map((material) => {
-      const usageCount = orders.filter((o) => o.material?.id === material.id).length;
+      const usageCount = filteredOrders.filter((o) => o.material?.id === material.id).length;
       return {
         name: material.name,
         orders: usageCount,
@@ -105,7 +156,7 @@ const DashboardPage: React.FC = () => {
   // Top customers
   const customerOrders = customers
     .map((customer) => {
-      const orderCount = orders.filter((o) => o.customer?.id === customer.id).length;
+      const orderCount = filteredOrders.filter((o) => o.customer?.id === customer.id).length;
       return {
         name: customer.name,
         orders: orderCount,
@@ -115,12 +166,12 @@ const DashboardPage: React.FC = () => {
     .sort((a, b) => b.orders - a.orders)
     .slice(0, 5);
 
-  // Orders trend (last 6 months)
+  // Orders trend (last 6 months) - filtered by date range
   const monthlyTrend = Array.from({ length: 6 }, (_, i) => {
     const monthDate = subMonths(new Date(), 5 - i);
     const monthStart = startOfMonth(monthDate);
     const monthEnd = endOfMonth(monthDate);
-    const monthOrders = orders.filter((o) => {
+    const monthOrders = filteredOrders.filter((o) => {
       const createdDate = new Date(o.createdAt);
       return createdDate >= monthStart && createdDate <= monthEnd;
     });
@@ -132,10 +183,10 @@ const DashboardPage: React.FC = () => {
     };
   });
 
-  // Top operators
+  // Top operators - filtered by date range
   const operatorStats = users
     .map((user) => {
-      const assignedOrders = orders.filter((o) => o.assignedTo?.id === user.id);
+      const assignedOrders = filteredOrders.filter((o) => o.assignedTo?.id === user.id);
       const completedCount = assignedOrders.filter(
         (o) => o.status === 'COMPLETED' || o.status === 'DELIVERED'
       ).length;
@@ -170,6 +221,130 @@ const DashboardPage: React.FC = () => {
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{t('dashboardSubtitle')}</p>
         </div>
 
+        {/* Date Range Selector */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center space-x-2">
+              <Calendar className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('dateRange')}:
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setDateRange('today')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition ${
+                  dateRange === 'today'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('today')}
+              </button>
+              <button
+                onClick={() => setDateRange('week')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition ${
+                  dateRange === 'week'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('thisWeek')}
+              </button>
+              <button
+                onClick={() => setDateRange('month')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition ${
+                  dateRange === 'month'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('thisMonth')}
+              </button>
+              <button
+                onClick={() => setDateRange('last3months')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition ${
+                  dateRange === 'last3months'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('last3Months')}
+              </button>
+              <button
+                onClick={() => setDateRange('last6months')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition ${
+                  dateRange === 'last6months'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('last6Months')}
+              </button>
+              <button
+                onClick={() => setDateRange('year')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition ${
+                  dateRange === 'year'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('thisYear')}
+              </button>
+              <button
+                onClick={() => setDateRange('all')}
+                className={`px-3 py-1.5 text-sm rounded-lg transition ${
+                  dateRange === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t('allTime')}
+              </button>
+            </div>
+          </div>
+
+          {/* Custom Date Range */}
+          {dateRange === 'custom' && (
+            <div className="mt-4 flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t('startDate')}
+                </label>
+                <input
+                  type="date"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t('endDate')}
+                </label>
+                <input
+                  type="date"
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={() => setDateRange('custom')}
+            className={`mt-4 px-3 py-1.5 text-sm rounded-lg transition ${
+              dateRange === 'custom'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+          >
+            {t('customRange')}
+          </button>
+        </div>
+
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Total Orders */}
@@ -179,7 +354,7 @@ const DashboardPage: React.FC = () => {
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('totalOrders')}</p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{totalOrders}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {ordersThisMonth} {t('thisMonth')}
+                  {t('inSelectedRange')}
                 </p>
               </div>
               <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
