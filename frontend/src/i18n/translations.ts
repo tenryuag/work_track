@@ -172,6 +172,35 @@ export const translations = {
 
     // Navigation
     home: 'ホーム',
+    dashboard: 'ダッシュボード',
+
+    // Dashboard
+    dashboardSubtitle: '生産管理の概要と統計',
+    thisMonth: '今月',
+    completionRate: '完了率',
+    completedOrders: '完了した注文',
+    pendingOrders: '保留中の注文',
+    inProgressOrders: '進行中の注文',
+    awaitingProcessing: '処理待ち',
+    currentlyWorking: '作業中',
+    ordersByStatus: 'ステータス別注文',
+    ordersByPriority: '優先度別注文',
+    topMaterialsUsed: '最も使用された材料',
+    topCustomers: 'トップ顧客',
+    ordersTrend: '注文のトレンド',
+    topOperators: 'トップオペレーター',
+    noData: 'データがありません',
+    dateRange: '期間',
+    today: '今日',
+    thisWeek: '今週',
+    last3Months: '過去3ヶ月',
+    last6Months: '過去6ヶ月',
+    thisYear: '今年',
+    allTime: '全期間',
+    customRange: 'カスタム期間',
+    startDate: '開始日',
+    endDate: '終了日',
+    inSelectedRange: '選択された期間内',
   },
   en: {
     // Common
@@ -346,6 +375,35 @@ export const translations = {
 
     // Navigation
     home: 'Home',
+    dashboard: 'Dashboard',
+
+    // Dashboard
+    dashboardSubtitle: 'Production management overview and statistics',
+    thisMonth: 'this month',
+    completionRate: 'completion rate',
+    completedOrders: 'Completed Orders',
+    pendingOrders: 'Pending Orders',
+    inProgressOrders: 'In Progress Orders',
+    awaitingProcessing: 'awaiting processing',
+    currentlyWorking: 'currently working',
+    ordersByStatus: 'Orders by Status',
+    ordersByPriority: 'Orders by Priority',
+    topMaterialsUsed: 'Top Materials Used',
+    topCustomers: 'Top Customers',
+    ordersTrend: 'Orders Trend',
+    topOperators: 'Top Operators',
+    noData: 'No data available',
+    dateRange: 'Date Range',
+    today: 'Today',
+    thisWeek: 'This Week',
+    last3Months: 'Last 3 Months',
+    last6Months: 'Last 6 Months',
+    thisYear: 'This Year',
+    allTime: 'All Time',
+    customRange: 'Custom Range',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    inSelectedRange: 'in selected range',
   },
 };
 

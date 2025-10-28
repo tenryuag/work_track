@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { LogOut, User, Globe, Sun, Moon, Home, Users, Package, UserCog } from 'lucide-react';
+import { LogOut, User, Globe, Sun, Moon, Home, Users, Package, UserCog, BarChart3 } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -119,7 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
 
       {/* Navigation */}
-      {user?.role === 'ADMIN' && (
+      {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
         <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-4 py-3">
@@ -135,38 +135,53 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <span>{t('home')}</span>
               </button>
               <button
-                onClick={() => navigate('/customers')}
+                onClick={() => navigate('/dashboard')}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  location.pathname === '/customers'
+                  location.pathname === '/dashboard'
                     ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                <Users className="h-4 w-4" />
-                <span>{t('customers')}</span>
+                <BarChart3 className="h-4 w-4" />
+                <span>{t('dashboard')}</span>
               </button>
-              <button
-                onClick={() => navigate('/materials')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  location.pathname === '/materials'
-                    ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <Package className="h-4 w-4" />
-                <span>{t('materials')}</span>
-              </button>
-              <button
-                onClick={() => navigate('/users')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  location.pathname === '/users'
-                    ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <UserCog className="h-4 w-4" />
-                <span>{t('users')}</span>
-              </button>
+              {user?.role === 'ADMIN' && (
+                <>
+                  <button
+                    onClick={() => navigate('/customers')}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      location.pathname === '/customers'
+                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <Users className="h-4 w-4" />
+                    <span>{t('customers')}</span>
+                  </button>
+                  <button
+                    onClick={() => navigate('/materials')}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      location.pathname === '/materials'
+                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <Package className="h-4 w-4" />
+                    <span>{t('materials')}</span>
+                  </button>
+                  <button
+                    onClick={() => navigate('/users')}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      location.pathname === '/users'
+                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <UserCog className="h-4 w-4" />
+                    <span>{t('users')}</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </nav>
