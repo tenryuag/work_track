@@ -75,45 +75,69 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  // Get date range bounds
-  const getDateRangeBounds = () => {
+  // Filter orders by date range
+  const filteredOrders = React.useMemo(() => {
+    console.log('=== FILTERING ORDERS ===');
+    console.log('Date Range:', dateRange);
+    console.log('Total orders:', orders.length);
+
+    // Get date range bounds inside useMemo
     const now = new Date();
+    let bounds = null;
+
     switch (dateRange) {
       case 'today':
-        return { start: startOfDay(now), end: endOfDay(now) };
+        bounds = { start: startOfDay(now), end: endOfDay(now) };
+        break;
       case 'week':
-        return { start: startOfWeek(now), end: endOfWeek(now) };
+        bounds = { start: startOfWeek(now), end: endOfWeek(now) };
+        break;
       case 'month':
-        return { start: startOfMonth(now), end: endOfMonth(now) };
+        bounds = { start: startOfMonth(now), end: endOfMonth(now) };
+        break;
       case 'last3months':
-        return { start: subMonths(now, 3), end: now };
+        bounds = { start: subMonths(now, 3), end: now };
+        break;
       case 'last6months':
-        return { start: subMonths(now, 6), end: now };
+        bounds = { start: subMonths(now, 6), end: now };
+        break;
       case 'year':
-        return { start: startOfYear(now), end: endOfYear(now) };
+        bounds = { start: startOfYear(now), end: endOfYear(now) };
+        break;
       case 'custom':
         if (customStartDate && customEndDate) {
-          return {
+          bounds = {
             start: startOfDay(new Date(customStartDate)),
             end: endOfDay(new Date(customEndDate)),
           };
         }
-        return null;
+        break;
       case 'all':
       default:
-        return null;
+        bounds = null;
     }
-  };
 
-  // Filter orders by date range
-  const filteredOrders = React.useMemo(() => {
-    const bounds = getDateRangeBounds();
-    if (!bounds) return orders;
+    console.log('Bounds:', bounds);
 
-    return orders.filter((order) => {
+    if (!bounds) {
+      console.log('No bounds, returning all orders');
+      return orders;
+    }
+
+    const filtered = orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      return orderDate >= bounds.start && orderDate <= bounds.end;
+      const isInRange = orderDate >= bounds.start && orderDate <= bounds.end;
+      return isInRange;
     });
+
+    console.log('Filtered orders:', filtered.length);
+    console.log('First few orders:', orders.slice(0, 3).map(o => ({
+      product: o.product,
+      createdAt: o.createdAt,
+      parsed: new Date(o.createdAt)
+    })));
+
+    return filtered;
   }, [orders, dateRange, customStartDate, customEndDate]);
 
   // KPIs (using filtered orders)
