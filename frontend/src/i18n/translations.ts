@@ -172,6 +172,24 @@ export const translations = {
 
     // Navigation
     home: 'ホーム',
+    dashboard: 'ダッシュボード',
+
+    // Dashboard
+    dashboardSubtitle: '生産管理の概要と統計',
+    thisMonth: '今月',
+    completionRate: '完了率',
+    completedOrders: '完了した注文',
+    pendingOrders: '保留中の注文',
+    inProgressOrders: '進行中の注文',
+    awaitingProcessing: '処理待ち',
+    currentlyWorking: '作業中',
+    ordersByStatus: 'ステータス別注文',
+    ordersByPriority: '優先度別注文',
+    topMaterialsUsed: '最も使用された材料',
+    topCustomers: 'トップ顧客',
+    ordersTrend: '注文のトレンド',
+    topOperators: 'トップオペレーター',
+    noData: 'データがありません',
   },
   en: {
     // Common
@@ -346,6 +364,24 @@ export const translations = {
 
     // Navigation
     home: 'Home',
+    dashboard: 'Dashboard',
+
+    // Dashboard
+    dashboardSubtitle: 'Production management overview and statistics',
+    thisMonth: 'this month',
+    completionRate: 'completion rate',
+    completedOrders: 'Completed Orders',
+    pendingOrders: 'Pending Orders',
+    inProgressOrders: 'In Progress Orders',
+    awaitingProcessing: 'awaiting processing',
+    currentlyWorking: 'currently working',
+    ordersByStatus: 'Orders by Status',
+    ordersByPriority: 'Orders by Priority',
+    topMaterialsUsed: 'Top Materials Used',
+    topCustomers: 'Top Customers',
+    ordersTrend: 'Orders Trend',
+    topOperators: 'Top Operators',
+    noData: 'No data available',
   },
 };
 
