@@ -44,7 +44,7 @@ export const translations = {
 
     // HomePage
     productionOrders: '生産注文',
-    totalOrders: '全 {count} 件の注文',
+    totalOrders: '全件の注文',
     newOrder: '新規注文',
     filters: 'フィルター',
     noOrders: '注文がありません',
@@ -247,7 +247,7 @@ export const translations = {
 
     // HomePage
     productionOrders: 'Production Orders',
-    totalOrders: 'Total {count} orders',
+    totalOrders: 'Total orders',
     newOrder: 'New Order',
     filters: 'Filters',
     noOrders: 'No orders available',
