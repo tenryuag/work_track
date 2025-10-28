@@ -106,7 +106,7 @@ const DashboardPage: React.FC = () => {
   };
 
   // Filter orders by date range
-  const filteredOrders = (() => {
+  const filteredOrders = React.useMemo(() => {
     const bounds = getDateRangeBounds();
     if (!bounds) return orders;
 
@@ -114,7 +114,7 @@ const DashboardPage: React.FC = () => {
       const orderDate = new Date(order.createdAt);
       return orderDate >= bounds.start && orderDate <= bounds.end;
     });
-  })();
+  }, [orders, dateRange, customStartDate, customEndDate]);
 
   // KPIs (using filtered orders)
   const totalOrders = filteredOrders.length;
