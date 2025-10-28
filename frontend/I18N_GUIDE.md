@@ -207,8 +207,8 @@ Algunas traducciones necesitan valores dinámicos:
 
 ```typescript
 // En translations.ts
-totalOrders: '全 {count} 件の注文',  // Japonés
-totalOrders: 'Total {count} orders',  // Inglés
+totalOrders: '全件の注文',  // Japonés
+totalOrders: 'Total orders',  // Inglés
 
 // En el componente
 <p>{t('totalOrders', { count: orders.length })}</p>
