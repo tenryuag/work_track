@@ -20,13 +20,13 @@ This directory contains SQL scripts to populate the database with sample data fo
 All test users have the same password: `password123`
 
 **Operators:**
-- juan.perez@worktrack.com / password123
-- maria.garcia@worktrack.com / password123
-- carlos.rodriguez@worktrack.com / password123
-- ana.lopez@worktrack.com / password123
+- tanaka.hiroshi@worktrack.com / password123 (田中 ヒロシ)
+- suzuki.yuki@worktrack.com / password123 (鈴木 ユキ)
+- sato.takeshi@worktrack.com / password123 (佐藤 タケシ)
+- ito.aiko@worktrack.com / password123 (伊藤 アイコ)
 
 **Manager:**
-- roberto.manager@worktrack.com / password123
+- nakamura.kenji@worktrack.com / password123 (中村 ケンジ)
 
 ## 🚀 How to Run
 

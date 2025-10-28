@@ -9,11 +9,11 @@
 -- BCrypt hash for "password123": $2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe
 
 INSERT INTO users (name, email, password, role, active, created_at, updated_at) VALUES
-('Juan Pérez', 'juan.perez@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
-('María García', 'maria.garcia@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
-('Carlos Rodríguez', 'carlos.rodriguez@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
-('Ana López', 'ana.lopez@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
-('Roberto Manager', 'roberto.manager@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'MANAGER', true, NOW(), NOW())
+('田中 ヒロシ', 'tanaka.hiroshi@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
+('鈴木 ユキ', 'suzuki.yuki@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
+('佐藤 タケシ', 'sato.takeshi@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
+('伊藤 アイコ', 'ito.aiko@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'OPERATOR', true, NOW(), NOW()),
+('中村 ケンジ', 'nakamura.kenji@worktrack.com', '$2a$10$3euPcmQFCiblsZeEu5s7p.z4txCMCBFZrRZxKmJnkJJBu/oWzXjZe', 'MANAGER', true, NOW(), NOW())
 ON CONFLICT (email) DO NOTHING;
 
 -- =============================================

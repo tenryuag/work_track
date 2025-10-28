@@ -80,29 +80,29 @@ public class BackendApplication {
                 operator2.setActive(true);
                 userRepository.save(operator2);
 
-                // Operator 3 (Juan Pérez)
+                // Operator 3 (Tanaka Hiroshi)
                 User operator3 = new User();
-                operator3.setEmail("juan.perez@worktrack.com");
+                operator3.setEmail("tanaka.hiroshi@worktrack.com");
                 operator3.setPassword(passwordEncoder.encode("password123"));
-                operator3.setName("Juan Pérez");
+                operator3.setName("田中 ヒロシ");
                 operator3.setRole(User.Role.OPERATOR);
                 operator3.setActive(true);
                 userRepository.save(operator3);
 
-                // Operator 4 (María García)
+                // Operator 4 (Suzuki Yuki)
                 User operator4 = new User();
-                operator4.setEmail("maria.garcia@worktrack.com");
+                operator4.setEmail("suzuki.yuki@worktrack.com");
                 operator4.setPassword(passwordEncoder.encode("password123"));
-                operator4.setName("María García");
+                operator4.setName("鈴木 ユキ");
                 operator4.setRole(User.Role.OPERATOR);
                 operator4.setActive(true);
                 userRepository.save(operator4);
 
-                // Manager 2 (Roberto Manager)
+                // Manager 2 (Nakamura Kenji)
                 User manager2 = new User();
-                manager2.setEmail("roberto.manager@worktrack.com");
+                manager2.setEmail("nakamura.kenji@worktrack.com");
                 manager2.setPassword(passwordEncoder.encode("password123"));
-                manager2.setName("Roberto Manager");
+                manager2.setName("中村 ケンジ");
                 manager2.setRole(User.Role.MANAGER);
                 manager2.setActive(true);
                 userRepository.save(manager2);
@@ -268,10 +268,11 @@ public class BackendApplication {
             System.out.println("CREDENCIALES DE ACCESO:");
             System.out.println("Admin: admin@worktrack.com / admin123");
             System.out.println("Manager: manager@worktrack.com / manager123");
+            System.out.println("         nakamura.kenji@worktrack.com / password123");
             System.out.println("Operators: operator1@worktrack.com / operator123");
             System.out.println("           operator2@worktrack.com / operator123");
-            System.out.println("           juan.perez@worktrack.com / password123");
-            System.out.println("           maria.garcia@worktrack.com / password123");
+            System.out.println("           tanaka.hiroshi@worktrack.com / password123");
+            System.out.println("           suzuki.yuki@worktrack.com / password123");
             System.out.println("===================================");
         };
     }
