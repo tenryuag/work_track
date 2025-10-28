@@ -125,20 +125,20 @@ const DashboardPage: React.FC = () => {
 
   const completionRate = totalOrders > 0 ? ((completedOrders + deliveredOrders) / totalOrders) * 100 : 0;
 
-  // Orders by status
+  // Orders by status (filter out 0 values to avoid overlapping labels)
   const ordersByStatus = [
     { name: t('pending'), value: pendingOrders, color: '#f97316' },
     { name: t('inProgress'), value: inProgressOrders, color: '#3b82f6' },
     { name: t('completed'), value: completedOrders, color: '#22c55e' },
     { name: t('delivered'), value: deliveredOrders, color: '#a855f7' },
-  ];
+  ].filter((status) => status.value > 0);
 
-  // Orders by priority
+  // Orders by priority (filter out 0 values)
   const ordersByPriority = [
     { name: t('high'), value: filteredOrders.filter((o) => o.priority === 'HIGH').length },
     { name: t('medium'), value: filteredOrders.filter((o) => o.priority === 'MEDIUM').length },
     { name: t('low'), value: filteredOrders.filter((o) => o.priority === 'LOW').length },
-  ];
+  ].filter((priority) => priority.value > 0);
 
   // Top materials used
   const materialUsage = materials
