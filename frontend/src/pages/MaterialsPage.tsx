@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
 import FilterPanel from '../components/FilterPanel';
+import ErrorAlert from '../components/ErrorAlert';
 import { materialsAPI } from '../services/api';
 import type { Material, MaterialRequest } from '../types';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
@@ -12,6 +13,7 @@ const MaterialsPage: React.FC = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [formData, setFormData] = useState<MaterialRequest>({
@@ -131,15 +133,31 @@ const MaterialsPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm(t('confirmDeleteMaterial'))) return;
     try {
+      setDeleteError('');
       await materialsAPI.delete(id);
       await fetchMaterials();
     } catch (err: any) {
-      alert(t('deleteFailed'));
+      // Check if error is due to foreign key constraint
+      const errorMessage = err.response?.data?.message || err.message || t('deleteFailed');
+
+      if (errorMessage.includes('foreign key') || errorMessage.includes('constraint') || errorMessage.includes('referenced')) {
+        setDeleteError(t('cannotDeleteMaterialInUse'));
+      } else {
+        setDeleteError(errorMessage);
+      }
     }
   };
 
   return (
     <Layout>
+      {/* Error Alert */}
+      {deleteError && (
+        <ErrorAlert
+          message={deleteError}
+          onClose={() => setDeleteError('')}
+        />
+      )}
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import Layout from '../components/Layout';
 import FilterPanel from '../components/FilterPanel';
+import ErrorAlert from '../components/ErrorAlert';
 import { customersAPI } from '../services/api';
 import type { Customer, CustomerRequest } from '../types';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
@@ -12,6 +13,7 @@ const CustomersPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [formData, setFormData] = useState<CustomerRequest>({
@@ -126,15 +128,31 @@ const CustomersPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm(t('confirmDeleteCustomer'))) return;
     try {
+      setDeleteError('');
       await customersAPI.delete(id);
       await fetchCustomers();
     } catch (err: any) {
-      alert(t('deleteFailed'));
+      // Check if error is due to foreign key constraint
+      const errorMessage = err.response?.data?.message || err.message || t('deleteFailed');
+
+      if (errorMessage.includes('foreign key') || errorMessage.includes('constraint') || errorMessage.includes('referenced')) {
+        setDeleteError(t('cannotDeleteCustomerInUse'));
+      } else {
+        setDeleteError(errorMessage);
+      }
     }
   };
 
   return (
     <Layout>
+      {/* Error Alert */}
+      {deleteError && (
+        <ErrorAlert
+          message={deleteError}
+          onClose={() => setDeleteError('')}
+        />
+      )}
+
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
