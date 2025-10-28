@@ -77,10 +77,6 @@ const DashboardPage: React.FC = () => {
 
   // Filter orders by date range
   const filteredOrders = React.useMemo(() => {
-    console.log('=== FILTERING ORDERS ===');
-    console.log('Date Range:', dateRange);
-    console.log('Total orders:', orders.length);
-
     // Get date range bounds inside useMemo
     const now = new Date();
     let bounds = null;
@@ -117,27 +113,14 @@ const DashboardPage: React.FC = () => {
         bounds = null;
     }
 
-    console.log('Bounds:', bounds);
-
     if (!bounds) {
-      console.log('No bounds, returning all orders');
       return orders;
     }
 
-    const filtered = orders.filter((order) => {
+    return orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      const isInRange = orderDate >= bounds.start && orderDate <= bounds.end;
-      return isInRange;
+      return orderDate >= bounds.start && orderDate <= bounds.end;
     });
-
-    console.log('Filtered orders:', filtered.length);
-    console.log('First few orders:', orders.slice(0, 3).map(o => ({
-      product: o.product,
-      createdAt: o.createdAt,
-      parsed: new Date(o.createdAt)
-    })));
-
-    return filtered;
   }, [orders, dateRange, customStartDate, customEndDate]);
 
   // KPIs (using filtered orders)
