@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
-import { LogOut, User, Globe, Sun, Moon, Home, Users, Package, UserCog, BarChart3 } from 'lucide-react';
+import { LogOut, User, Globe, Sun, Moon, Home, Users, Package, UserCog, BarChart3, Target, ClipboardList, PenTool, Calendar } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -119,7 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
 
       {/* Navigation */}
-      {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
+      {user && (
         <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-4 py-3">
@@ -145,7 +145,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <BarChart3 className="h-4 w-4" />
                 <span>{t('dashboard')}</span>
               </button>
-              {user?.role === 'ADMIN' && (
+              {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
                 <>
                   <button
                     onClick={() => navigate('/customers')}
@@ -182,6 +182,58 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </button>
                 </>
               )}
+
+              {/* KPI System Links */}
+              {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
+                <>
+                   <button
+                    onClick={() => navigate('/kpis')}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      location.pathname === '/kpis'
+                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <Target className="h-4 w-4" />
+                    <span>{t('kpis')}</span>
+                  </button>
+                  <button
+                    onClick={() => navigate('/assignments')}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      location.pathname === '/assignments'
+                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <ClipboardList className="h-4 w-4" />
+                    <span>{t('assignments')}</span>
+                  </button>
+                </>
+              )}
+
+               {/* Evaluations & Work Plans (Accessible to all authenticated users) */}
+               <button
+                  onClick={() => navigate('/evaluations')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    location.pathname === '/evaluations'
+                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <PenTool className="h-4 w-4" />
+                  <span>{t('evaluations')}</span>
+                </button>
+                <button
+                  onClick={() => navigate('/work-plans')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    location.pathname === '/work-plans'
+                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <Calendar className="h-4 w-4" />
+                  <span>{t('workPlans')}</span>
+                </button>
             </div>
           </div>
         </nav>

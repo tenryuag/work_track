@@ -67,14 +67,17 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
-                                .requestMatchers("/actuator/**").permitAll()
-                                .requestMatchers("/api/orders/**").authenticated()
-                                .requestMatchers("/api/users/**").authenticated()
-                                .anyRequest().authenticated()
-                );
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/actuator/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/orders/**").authenticated()
+                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/work-plans/**").authenticated()
+                        .requestMatchers("/api/kpis/**").authenticated()
+                        .requestMatchers("/api/assignments/**").authenticated()
+                        .requestMatchers("/api/evaluations/**").authenticated()
+                        .anyRequest().authenticated());
 
         // Para H2 Console
         http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));

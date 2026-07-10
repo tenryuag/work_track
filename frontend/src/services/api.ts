@@ -11,7 +11,20 @@ import type {
   StatusChangeRequest,
   UserBasic,
   UserDetail,
-  UserRequest
+  UserRequest,
+  Kpi,
+  KpiRequest,
+  Assignment,
+  AssignmentRequest,
+  Evaluation,
+  EvaluationRequest,
+  EvaluationResponse,
+  Period,
+  Score,
+  WorkPlan,
+  WorkPlanRequest,
+  WorkPlanTaskRequest,
+  EvaluationFrequency
 } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -95,6 +108,40 @@ export const materialsAPI = {
   create: (data: MaterialRequest) => api.post<Material>('/materials', data),
   update: (id: number, data: MaterialRequest) => api.put<Material>(`/materials/${id}`, data),
   delete: (id: number) => api.delete(`/materials/${id}`),
+};
+
+// KPI System APIs
+
+export const kpisAPI = {
+  getAll: () => api.get<Kpi[]>('/kpis'),
+  getActive: () => api.get<Kpi[]>('/kpis/active'),
+  getById: (id: string) => api.get<Kpi>(`/kpis/${id}`),
+  create: (data: KpiRequest) => api.post<Kpi>('/kpis', data),
+  update: (id: string, data: KpiRequest) => api.put<Kpi>(`/kpis/${id}`, data),
+  delete: (id: string) => api.delete(`/kpis/${id}`),
+};
+
+export const assignmentsAPI = {
+  getByWorker: (workerId: number) => api.get<Assignment[]>(`/assignments/worker/${workerId}`),
+  getByKpi: (kpiId: string) => api.get<Assignment[]>(`/assignments/kpi/${kpiId}`),
+  create: (data: AssignmentRequest) => api.post<Assignment>('/assignments', data),
+  update: (id: number, data: AssignmentRequest) => api.put<Assignment>(`/assignments/${id}`, data),
+  delete: (id: number) => api.delete(`/assignments/${id}`),
+};
+
+export const evaluationsAPI = {
+  getCurrentPeriod: (frequency: EvaluationFrequency) => api.get<Period>(`/evaluations/period`, { params: { frequency } }),
+  submit: (data: EvaluationRequest) => api.post<EvaluationResponse>('/evaluations', data),
+  getScore: (id: number) => api.get<Score>(`/evaluations/${id}/score`),
+};
+
+export const workPlansAPI = {
+  getGlobal: (year: number) => api.get<WorkPlan>(`/work-plans/global`, { params: { year } }),
+  getUser: (year: number, userId: number) => api.get<WorkPlan>(`/work-plans/user/${userId}`, { params: { year } }),
+  upsert: (data: WorkPlanRequest) => api.post<WorkPlan>('/work-plans', data),
+  addTask: (workPlanId: number, data: WorkPlanTaskRequest) => api.post<WorkPlan>(`/work-plans/${workPlanId}/tasks`, data),
+  updateTask: (taskId: number, data: WorkPlanTaskRequest) => api.put<WorkPlan>(`/work-plans/tasks/${taskId}`, data),
+  deleteTask: (taskId: number) => api.delete<WorkPlan>(`/work-plans/tasks/${taskId}`),
 };
 
 export default api;

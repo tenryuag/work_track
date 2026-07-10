@@ -1,8 +1,8 @@
-export type UserRole = 'ADMIN' | 'MANAGER' | 'OPERATOR';
+export type UserRole = "ADMIN" | "MANAGER" | "OPERATOR";
 
-export type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'DELIVERED';
+export type OrderStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "DELIVERED";
 
-export type OrderPriority = 'HIGH' | 'MEDIUM' | 'LOW';
+export type OrderPriority = "HIGH" | "MEDIUM" | "LOW";
 
 export interface User {
   id: number;
@@ -138,4 +138,170 @@ export interface UserRequest {
   email: string;
   password?: string;
   role: string;
+}
+
+// KPI System Types
+
+export type EvaluationFrequency =
+  | "DAILY"
+  | "WEEKLY"
+  | "BIWEEKLY"
+  | "MONTHLY"
+  | "QUARTERLY"
+  | "SEMIANNUAL";
+export type ValueType = "BOOLEAN" | "NUMERIC" | "PERCENT" | "SCORE";
+export type TargetType = "MIN" | "MAX" | "RANGE" | "EQUAL";
+export type AggregationMethod =
+  | "LAST"
+  | "AVG"
+  | "SUM"
+  | "COUNT_TRUE"
+  | "COUNT_FALSE"
+  | "PERCENT_TRUE"
+  | "MANUAL_FORMULA";
+export type EvaluationStatus = "DRAFT" | "SUBMITTED" | "APPROVED";
+
+export interface Kpi {
+  id: string; // UUID
+  competence?: string;
+  specificRoleApplication?: string;
+  name: string;
+  controlMeasure?: string;
+  frequency: EvaluationFrequency;
+  valueType: ValueType;
+  targetType: TargetType;
+  targetValue1?: number;
+  targetValue2?: number;
+  aggregationMethod: AggregationMethod;
+  unit?: string;
+  evidenceRequired: boolean;
+  description?: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KpiRequest {
+  competence?: string;
+  specificRoleApplication?: string;
+  name: string;
+  controlMeasure?: string;
+  frequency: EvaluationFrequency;
+  valueType: ValueType;
+  targetType: TargetType;
+  targetValue1?: number;
+  targetValue2?: number;
+  aggregationMethod: AggregationMethod;
+  unit?: string;
+  evidenceRequired: boolean;
+  description?: string;
+  active?: boolean;
+}
+
+export interface Assignment {
+  id: number;
+  worker: UserBasic; // Reusing UserBasic from existing types? Yes
+  kpi: Kpi;
+  startDate: string;
+  endDate?: string;
+  weight?: number;
+  targetOverride?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AssignmentRequest {
+  workerId: number;
+  kpiId: string;
+  startDate: string;
+  endDate?: string;
+  weight?: number;
+  targetOverride?: number;
+}
+
+export interface Evidence {
+  id: number;
+  fileUrl?: string;
+  note?: string;
+  createdAt: string;
+}
+
+export interface EvidenceRequest {
+  fileUrl?: string;
+  note?: string;
+}
+
+export interface Evaluation {
+  id: number;
+  assignment?: Assignment; // EvaluationResponse has assignment
+  periodStart: string;
+  periodEnd: string;
+  valueBoolean?: boolean;
+  valueNumber?: number;
+  valueText?: string;
+  status: EvaluationStatus;
+  createdBy: UserBasic;
+  evidence?: Evidence[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type EvaluationResponse = Evaluation;
+
+export interface EvaluationRequest {
+  assignmentId: number;
+  periodStart: string;
+  periodEnd: string;
+  valueBoolean?: boolean;
+  valueNumber?: number;
+  valueText?: string;
+  status: EvaluationStatus;
+  evidence?: EvidenceRequest[];
+}
+
+export interface Period {
+  startDate: string;
+  endDate: string;
+  label: string;
+}
+
+export interface Score {
+  assignmentId: number;
+  periodStart: string;
+  score: number;
+  normalizedScore: number;
+}
+
+export interface WorkPlan {
+  id: number;
+  year: number;
+  user?: UserBasic; // Null if global
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  tasks?: WorkPlanTask[];
+}
+
+export interface WorkPlanRequest {
+  year: number;
+  userId?: number;
+  description: string;
+}
+
+export interface WorkPlanTask {
+  id: number;
+  workPlanId: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  progress: number;
+  status: string; // "TODO" | "IN_PROGRESS" | "DONE"
+}
+
+export interface WorkPlanTaskRequest {
+  name: string;
+  startDate: string;
+  endDate: string;
+  progress: number;
+  status: string;
 }

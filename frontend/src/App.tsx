@@ -10,6 +10,10 @@ import DashboardPage from './pages/DashboardPage';
 import CustomersPage from './pages/CustomersPage';
 import MaterialsPage from './pages/MaterialsPage';
 import UsersPage from './pages/UsersPage';
+import KpisPage from './pages/KpisPage';
+import AssignmentsPage from './pages/AssignmentsPage';
+import EvaluationsPage from './pages/EvaluationsPage';
+import WorkPlansPage from './pages/WorkPlansPage';
 
 const App: React.FC = () => {
   return (
@@ -56,6 +60,38 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute requireAdmin>
                     <UsersPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/kpis"
+                element={
+                  <PrivateRoute requireAdminOrManager>
+                    <KpisPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/assignments"
+                element={
+                  <PrivateRoute requireAdminOrManager>
+                    <AssignmentsPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/evaluations"
+                element={
+                  <PrivateRoute>
+                    <EvaluationsPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/work-plans"
+                element={
+                  <PrivateRoute>
+                    <WorkPlansPage />
                   </PrivateRoute>
                 }
               />

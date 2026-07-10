@@ -4,10 +4,9 @@ import com.worktrack.backend.entity.Customer;
 import com.worktrack.backend.entity.Material;
 import com.worktrack.backend.entity.Order;
 import com.worktrack.backend.entity.User;
-import com.worktrack.backend.repository.CustomerRepository;
-import com.worktrack.backend.repository.MaterialRepository;
-import com.worktrack.backend.repository.OrderRepository;
-import com.worktrack.backend.repository.UserRepository;
+import com.worktrack.backend.repository.*;
+import com.worktrack.backend.entity.*;
+import com.worktrack.backend.enums.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -36,6 +35,11 @@ public class BackendApplication {
             CustomerRepository customerRepository,
             MaterialRepository materialRepository,
             OrderRepository orderRepository,
+            KpiRepository kpiRepository,
+            AssignmentRepository assignmentRepository,
+            EvaluationRepository evaluationRepository,
+            WorkPlanRepository workPlanRepository,
+            WorkPlanTaskRepository workPlanTaskRepository,
             PasswordEncoder passwordEncoder) {
         return args -> {
             Random random = new Random();
@@ -147,11 +151,16 @@ public class BackendApplication {
             if (materialRepository.count() == 0) {
                 List<Material> materials = new ArrayList<>();
 
-                materials.add(createMaterial("Steel Plate 304", "Stainless steel plate 304 grade, corrosion resistant", "kg", 5000.0));
-                materials.add(createMaterial("Aluminum Alloy 6061", "Aluminum alloy 6061-T6, lightweight and strong", "kg", 3500.0));
-                materials.add(createMaterial("Carbon Fiber Sheet", "High-strength carbon fiber composite sheet", "m²", 250.0));
-                materials.add(createMaterial("Copper Wire 99.9%", "Pure copper wire for electrical applications", "kg", 1200.0));
-                materials.add(createMaterial("Plastic Polymer ABS", "ABS plastic polymer for injection molding", "kg", 4500.0));
+                materials.add(createMaterial("Steel Plate 304", "Stainless steel plate 304 grade, corrosion resistant",
+                        "kg", 5000.0));
+                materials.add(createMaterial("Aluminum Alloy 6061", "Aluminum alloy 6061-T6, lightweight and strong",
+                        "kg", 3500.0));
+                materials.add(createMaterial("Carbon Fiber Sheet", "High-strength carbon fiber composite sheet", "m²",
+                        250.0));
+                materials.add(createMaterial("Copper Wire 99.9%", "Pure copper wire for electrical applications", "kg",
+                        1200.0));
+                materials.add(createMaterial("Plastic Polymer ABS", "ABS plastic polymer for injection molding", "kg",
+                        4500.0));
 
                 materialRepository.saveAll(materials);
                 System.out.println("✓ 5 materiales creados (Steel, Aluminum, Carbon Fiber, etc.)");
@@ -240,7 +249,8 @@ public class BackendApplication {
                     order.setDeadline(deadline);
 
                     // Solo asignar máquina si está en progreso o completada
-                    if (status == Order.Status.IN_PROGRESS || status == Order.Status.COMPLETED || status == Order.Status.DELIVERED) {
+                    if (status == Order.Status.IN_PROGRESS || status == Order.Status.COMPLETED
+                            || status == Order.Status.DELIVERED) {
                         order.setMachine(machines[random.nextInt(machines.length)]);
                     }
 
@@ -274,6 +284,129 @@ public class BackendApplication {
             System.out.println("           tanaka.hiroshi@worktrack.com / password123");
             System.out.println("           suzuki.yuki@worktrack.com / password123");
             System.out.println("===================================");
+            System.out.println("===================================");
+
+            // =============================================
+            // 5. CREAR KPIs
+            // =============================================
+            if (kpiRepository.count() == 0) {
+                List<Kpi> kpis = new ArrayList<>();
+                kpis.add(createKpi("On-time Delivery", "Percentage of orders delivered on time",
+                        EvaluationFrequency.MONTHLY, ValueType.PERCENT, TargetType.MIN, 95.0, AggregationMethod.AVG));
+                kpis.add(createKpi("Quality Score", "Average quality score from inspections",
+                        EvaluationFrequency.WEEKLY, ValueType.SCORE, TargetType.MIN, 4.5, AggregationMethod.AVG));
+                kpis.add(createKpi("Safety Incidents", "Number of safety incidents reported",
+                        EvaluationFrequency.MONTHLY, ValueType.NUMERIC, TargetType.MAX, 0.0, AggregationMethod.SUM));
+                kpis.add(createKpi("Attendance", "Employee attendance rate", EvaluationFrequency.DAILY,
+                        ValueType.PERCENT, TargetType.MIN, 98.0, AggregationMethod.AVG));
+
+                kpiRepository.saveAll(kpis);
+                System.out.println("✓ 4 KPIs creados");
+            }
+
+            // =============================================
+            // 6. CREAR ASSIGNMENTS
+            // =============================================
+            if (assignmentRepository.count() == 0) {
+                List<User> operators = userRepository.findByRole(User.Role.OPERATOR);
+                List<Kpi> kpis = kpiRepository.findAll();
+                List<Assignment> assignments = new ArrayList<>();
+
+                for (User operator : operators) {
+                    for (Kpi kpi : kpis) {
+                        Assignment assignment = new Assignment();
+                        assignment.setWorker(operator);
+                        assignment.setKpi(kpi);
+                        assignment.setStartDate(LocalDate.now().minusMonths(6));
+                        assignment.setWeight(1.0);
+                        assignments.add(assignment);
+                    }
+                }
+                assignmentRepository.saveAll(assignments);
+                System.out.println("✓ Assignments creados para operadores");
+            }
+
+            // =============================================
+            // 7. CREAR EVALUATIONS
+            // =============================================
+            if (evaluationRepository.count() == 0) {
+                List<Assignment> assignments = assignmentRepository.findAllWithKpi();
+                User manager = userRepository.findByRole(User.Role.MANAGER).stream().findFirst().orElse(null);
+                List<Evaluation> evaluations = new ArrayList<>();
+
+                LocalDate today = LocalDate.now();
+
+                for (Assignment assignment : assignments) {
+                    EvaluationFrequency freq = assignment.getKpi().getFrequency();
+                    int numEvaluations = 3;
+
+                    for (int i = 0; i < numEvaluations; i++) {
+                        Evaluation eval = new Evaluation();
+                        eval.setAssignment(assignment);
+                        eval.setStatus(EvaluationStatus.APPROVED);
+                        eval.setCreatedBy(manager);
+
+                        LocalDate start;
+                        LocalDate end;
+
+                        if (freq == EvaluationFrequency.DAILY) {
+                            start = today.minusDays(i);
+                            end = start;
+                        } else if (freq == EvaluationFrequency.WEEKLY) {
+                            start = today.minusWeeks(i).with(java.time.DayOfWeek.MONDAY);
+                            end = start.plusDays(6);
+                        } else {
+                            start = today.minusMonths(i).withDayOfMonth(1);
+                            end = start.withDayOfMonth(start.lengthOfMonth());
+                        }
+
+                        eval.setPeriodStart(start);
+                        eval.setPeriodEnd(end);
+
+                        ValueType type = assignment.getKpi().getValueType();
+                        if (type == ValueType.PERCENT) {
+                            eval.setValueNumber(80.0 + random.nextDouble() * 20.0);
+                        } else if (type == ValueType.SCORE) {
+                            eval.setValueNumber(3.0 + random.nextDouble() * 2.0);
+                        } else {
+                            eval.setValueNumber(random.nextDouble() * 10);
+                        }
+
+                        evaluations.add(eval);
+                    }
+                }
+                evaluationRepository.saveAll(evaluations);
+                System.out.println("✓ Evaluations creadas");
+            }
+
+            // =============================================
+            // 8. CREAR WORK PLANS & TASKS
+            // =============================================
+            if (workPlanRepository.count() == 0) {
+                int currentYear = LocalDate.now().getYear();
+
+                // Global Plan
+                WorkPlan globalPlan = new WorkPlan();
+                globalPlan.setYear(currentYear);
+                globalPlan.setUser(null);
+                globalPlan.setDescription("Global Strategic Plan for " + currentYear);
+                workPlanRepository.save(globalPlan);
+
+                createTasksForPlan(globalPlan, workPlanTaskRepository);
+
+                // User Plans
+                List<User> operators = userRepository.findByRole(User.Role.OPERATOR);
+                for (User op : operators) {
+                    WorkPlan userPlan = new WorkPlan();
+                    userPlan.setYear(currentYear);
+                    userPlan.setUser(op);
+                    userPlan.setDescription("Individual Development Plan for " + op.getName());
+                    workPlanRepository.save(userPlan);
+
+                    createTasksForPlan(userPlan, workPlanTaskRepository);
+                }
+                System.out.println("✓ Work Plans y Tasks creados");
+            }
         };
     }
 
@@ -294,5 +427,52 @@ public class BackendApplication {
         material.setUnit(unit);
         material.setStockQuantity(stockQuantity);
         return material;
+    }
+
+    private Kpi createKpi(String name, String description, EvaluationFrequency freq, ValueType valueType,
+            TargetType targetType, Double targetVal, AggregationMethod aggMethod) {
+        Kpi kpi = new Kpi();
+        kpi.setName(name);
+        kpi.setDescription(description);
+        kpi.setFrequency(freq);
+        kpi.setValueType(valueType);
+        kpi.setTargetType(targetType);
+        kpi.setTargetValue1(targetVal);
+        kpi.setAggregationMethod(aggMethod);
+        kpi.setActive(true);
+        kpi.setEvidenceRequired(true);
+        return kpi;
+    }
+
+    private void createTasksForPlan(WorkPlan plan, WorkPlanTaskRepository repo) {
+        List<WorkPlanTask> tasks = new ArrayList<>();
+        String[] taskNames = { "Q1 Goals Definition", "Safety Training", "Process Optimization", "Q2 Review",
+                "Equipment Maintenance", "Year End Audit" };
+        LocalDate start = LocalDate.of(plan.getYear(), 1, 1);
+        Random r = new Random();
+
+        for (int i = 0; i < taskNames.length; i++) {
+            WorkPlanTask task = new WorkPlanTask();
+            task.setWorkPlan(plan);
+            task.setName(taskNames[i]);
+
+            LocalDate taskStart = start.plusMonths(i * 2);
+            task.setStartDate(taskStart);
+            task.setEndDate(taskStart.plusMonths(1).minusDays(1));
+
+            // Progress 0, 50, 100
+            int progress = r.nextInt(3) * 50;
+            task.setProgress(progress);
+
+            if (progress == 0)
+                task.setStatus("TODO");
+            else if (progress == 100)
+                task.setStatus("DONE");
+            else
+                task.setStatus("IN_PROGRESS");
+
+            tasks.add(task);
+        }
+        repo.saveAll(tasks);
     }
 }
